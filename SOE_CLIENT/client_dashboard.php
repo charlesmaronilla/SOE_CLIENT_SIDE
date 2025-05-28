@@ -11,319 +11,591 @@ $regular_result = $conn->query("SELECT * FROM menu_items WHERE is_featured = 0 A
 <head>
     <meta charset="UTF-8" />
     <title>Client Dashboard</title>
+    <link rel="stylesheet" href="css/view_cart.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
       * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f5ff;
     display: flex;
-    background-color: #f4f6f8;
+}
+
+.admin-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+}
+
+.header-logo {
+    height: 50px;
+    margin-right: 15px;
 }
 
 .sidebar {
     width: 240px;
-    background-color: #2c3e50;
+    background-color: rgba(0, 43, 92, 0.9);
+    border-radius: 10px;
+    margin-top: 30px;
     color: white;
     height: 100vh;
     padding: 20px;
     position: fixed;
+    top: 60px;
+    left: 0;
 }
 
 .sidebar h2 {
-    font-size: 22px;
+    font-size: 20px;
     margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .sidebar a {
-    color: white;
-    text-decoration: none;
     display: flex;
     align-items: center;
-    padding: 10px;
-    margin-bottom: 8px;
+    gap: 15px;
+    color: #fff;
+    text-decoration: none;
+    padding: 12px 15px;
     border-radius: 8px;
-    transition: background 0.3s;
+    transition: all 0.3s ease;
+    margin-bottom: 8px;
+}
+
+.sidebar a i {
+    font-size: 16px;
+    min-width: 20px;
+    text-align: center;
 }
 
 .sidebar a:hover {
-    background-color: #34495e;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.logoo-wrapper {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logoo-wrapper img {
+    width: 120px;
+    height: auto;
+    margin-bottom: 15px;
+}
+
+.logoo {
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.divider {
+    height: 2px;
+    background: rgba(255,255,255,0.1);
+    margin: 15px 0;
+}
+
+.tagline {
+    font-style: italic;
+    color: rgba(255,255,255,0.8);
+    font-size: 14px;
 }
 
 .content {
-    margin-left: 240px;
+    flex: 1;
+    margin-left: 280px;
+    padding: 90px 30px 30px;
+}
+
+.featured-section {
+    margin-top: -60px;
+    position: relative;
+    background: linear-gradient(135deg,rgb(113, 120, 133) 0%,rgb(78, 105, 151) 100%);
+    border-radius: 20px;
     padding: 30px;
-    flex-grow: 1;
+    margin-bottom: 50px;
+    overflow: hidden;
+}
+
+.featured-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+    opacity: 0.1;
+}
+
+.featured-section h2 {
+    color: white;
+    font-size: 28px;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+}
+
+.featured-section h2 i {
+    font-size: 24px;
 }
 
 .featured-carousel {
     position: relative;
-    height: 280px;
-    margin-bottom: 40px;
+    height: 400px;
+    margin: 0 auto;
 }
 
 .featured-card {
     position: absolute;
-    top: 0;
+    top: 10px;
     left: 50%;
-    transform: translateX(-50%);
-    width: 300px;
-    background: #fff;
-    padding: 16px;
-    border-radius: 12px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-    text-align: center;
+    transform: translateX(-50%) scale(0.8);
+    height: 400px;
+    width: 100%;
+    max-width: 1200px;
+    background-color: white;
+    border-radius: 20px;
+    padding: 0;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     opacity: 0;
-    transition: opacity 0.5s;
-    z-index: 0;
+    transition: all 0.5s ease;
+    pointer-events: none;
 }
 
 .featured-card.active {
     opacity: 1;
+    transform: translateX(-50%) scale(1);
+    pointer-events: all;
+    z-index: 2;
+}
+
+.featured-card.prev,
+.featured-card.next {
+    opacity: 0.5;
     z-index: 1;
+}
+
+.featured-card.prev {
+    transform: translateX(-150%) scale(0.8);
+}
+
+.featured-card.next {
+    transform: translateX(50%) scale(0.8);
 }
 
 .featured-card img {
     width: 100%;
-    height: 160px;
+    height: 250px;
     object-fit: cover;
+    border-radius: 20px 20px 0 0;
+}
+
+.featured-content {
+    padding: 20px;
+    text-align: center;
+}
+
+.featured-content h3 {
+    color:rgb(43, 46, 53);
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+.featured-content p {
+    color: #666;
+    font-size: 15px;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.featured-content strong {
+    color:rgb(83, 109, 153);
+    font-size: 24px;
+    display: block;
+    margin-bottom: 20px;
+}
+
+.carousel-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    z-index: 3;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+
+.menu-section {
+    margin-top: 60px;
+}
+
+.menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.menu-title {
+    color: #1e3c72;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-container {
+    position: relative;
+    width: 300px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 12px 20px;
+    padding-left: 40px;
+    border: 2px solid #e8f0fe;
     border-radius: 10px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+.search-box input:focus {
+    border-color: #2a5298;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+}
+
+.search-box i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #1e3c72;
 }
 
 .menu-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 20px;
 }
 
 .card {
-    background-color: #fff;
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-    text-align: center;
-    transition: transform 0.2s;
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transform-origin: center bottom;
 }
 
 .card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-5px) scale(1.02);
 }
 
 .card img {
     width: 100%;
-    height: 150px;
+    height: 180px;
     object-fit: cover;
-    border-radius: 10px;
+}
+
+.card-content {
+    padding: 20px;
 }
 
 .card h3 {
-    margin: 10px 0 4px;
+    color:rgb(43, 46, 53);
+    margin-bottom: 8px;
+    font-size: 18px;
 }
 
 .card p {
+    color: #666;
     font-size: 14px;
-    color: #555;
+    margin-bottom: 15px;
+    line-height: 1.4;
 }
 
 .card strong {
-    color: #e67e22;
+    color:rgb(83, 109, 153);
+    font-size: 20px;
     display: block;
-    margin-top: 6px;
-    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.quantity-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.quantity-controls button {
+    background-color: #1b4d4d;
+    color: white;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quantity-controls button:hover {
+    background-color: #2c7a7a;
+}
+
+.quantity-display {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    min-width: 30px;
+    text-align: center;
 }
 
 .add-to-cart-btn {
-    margin-top: 10px;
-    padding: 10px 14px;
-    background-color: #e67e22;
-    color: white;
+    width: 100%;
+    padding: 12px;
     border: none;
-    border-radius: 6px;
-    font-weight: bold;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: transform 0.2s ease;
 }
 
 .add-to-cart-btn:hover {
-    background-color: #cf711d;
+    transform: translateY(-2px);
+}
+
+.add-to-cart-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .cart-button {
     position: fixed;
-    top: 20px;
-    right: 20px;
-    background-color: #e67e22;
-    color: white;
+    top: 15px;
+    right: 30px;
+    padding: 12px 25px;
+    background: white;
+    color: #1e3c72;
     border: none;
-    padding: 12px 20px;
-    border-radius: 6px;
-    font-weight: bold;
+    border-radius: 8px;
+    font-weight: 600;
     cursor: pointer;
-    z-index: 1000;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
-}
-
-.cart-button:hover {
-    background-color: #cf711d;
-}
-
-.cart-modal {
-    display: none;
-    position: fixed;
-    top: 70px;
-    right: 20px;
-    width: 320px;
-    max-height: 420px;
-    overflow-y: auto;
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
     z-index: 1001;
 }
 
+.cart-button:hover {
+    transform: translateY(-2px);
+}
+
+.cart-modal {
+    position: fixed;
+    top: 80px;
+    right: 30px;
+    width: 350px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 25px rgba(0,0,0,0.15);
+    z-index: 1001;
+    padding: 20px;
+}
+
 .cart-modal h3 {
-    margin-top: 0;
-    font-size: 20px;
+    color: #1e3c72;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .cart-item {
-    margin-bottom: 10px;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 8px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e8f0fe;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .cart-item:last-child {
     border-bottom: none;
 }
 
-.cart-item strong {
-    color: #e67e22;
-}
-
 .close-cart {
-    float: right;
+    color: #1e3c72;
     cursor: pointer;
-    font-weight: bold;
-    color: #e67e22;
+    font-size: 24px;
 }
 
-
-.quantity-controls {
-    margin-top: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
+.cart-total {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 2px solid #e8f0fe;
+    text-align: right;
+    color: #1e3c72;
+    font-weight: bold;
+    font-size: 18px;
 }
 
-.quantity-controls button {
-    font-size: 20px;
-    font-weight: bold;
-    width: 32px;
-    height: 32px;
-    cursor: pointer;
-    background-color: #e67e22;
-    border: none;
+.view-cart-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
     color: white;
-    border-radius: 6px;
-    user-select: none;
-    transition: background-color 0.3s;
-    line-height: 0;
-}
-.quantity-controls button:hover {
-    background-color: #cf711d;
-}
-
-.quantity-display {
-    min-width: 24px;
-    font-weight: bold;
-    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
     text-align: center;
-    user-select: none;
+    text-decoration: none;
 }
-        
-        .quantity-controls {
-            margin-top: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
+
+.view-cart-btn:hover {
+    opacity: 0.9;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card {
+    animation: fadeIn 0.5s ease backwards;
+}
+
+.card:nth-child(n) {
+    animation-delay: calc(0.1s * var(--i, 0));
         }
 
-        .quantity-controls button {
-            font-size: 20px;
-            font-weight: bold;
-            width: 32px;
-            height: 32px;
-            cursor: pointer;
-            background-color: #e67e22;
-            border: none;
-            color: white;
-            border-radius: 6px;
-            user-select: none;
-            transition: background-color 0.3s;
-            line-height: 0;
-        }
-        .quantity-controls button:hover {
-            background-color: #cf711d;
-        }
+.sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #fff;
+    text-decoration: none;
+    padding: 12px 15px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    margin-bottom: 8px;
+}
 
-        .quantity-display {
-            min-width: 24px;
-            font-weight: bold;
-            font-size: 16px;
-            text-align: center;
-            user-select: none;
-        }
+.sidebar a i {
+    font-size: 16px;
+    min-width: 20px;
+    text-align: center;
+}
 
-        .add-to-cart-btn {
-            margin-top: 10px;
-            padding: 10px 14px;
-            background-color: #e67e22;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            width: 100%;
-        }
+.sidebar a:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
 
-        .add-to-cart-btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
     </style>
 </head>
 <body>
+    <!-- Header -->
+    <header class="admin-header">
+        <div class="header-brand">
+            <img src="Picture/logo1.png" alt="EZ-Order" class="header-logo">   
+        </div>
+    </header>
 
-<div class="sidebar">
-    <h2>🍽 Stalls</h2>
-    <?php while($stall = $stall_result->fetch_assoc()): ?>
-        <a href="stall_dashboard.php?stall_id=<?= $stall['id'] ?>">
-            👉 <?= htmlspecialchars($stall['name']) ?>
-        </a>
-    <?php endwhile; ?>
-</div>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logoo-wrapper">
+            <img src="Picture/logo2.png" alt="EZ-Order Logo" class="sidebar-logo">
+            <div class="logoo">EZ-ORDER</div>
+            <div class="divider"></div> 
+            <div class="tagline">"easy orders, zero hassle"</div>
+        </div>
+        <h2>🍽 Stalls</h2>
+        <?php 
+        $stall_query = "SELECT * FROM stalls";
+        $stall_result = $conn->query($stall_query);
+        while($stall_item = $stall_result->fetch_assoc()): ?>
+            <a href="stall_dashboard.php?stall_id=<?= $stall_item['id'] ?>">
+                <i class="fas fa-store"></i> <?= htmlspecialchars($stall_item['name']) ?>
+            </a>
+        <?php endwhile; ?>
+    </div>
 
-<div class="content">
-    <h2>🌟 Featured Item</h2>
+    <!-- Main Content -->
+    <div class="content" style="margin-top: 70px;">
+        <div class="featured-section">
     <div class="featured-carousel">
         <?php while($item = $featured_result->fetch_assoc()): ?>
             <div class="featured-card" data-id="<?= $item['id'] ?>">
                 <img src="assets/images/<?= htmlspecialchars($item['image']) ?>" alt="<?= htmlspecialchars($item['name']) ?>">
-                <h3><?= htmlspecialchars($item['name']) ?></h3>
-                <p><?= htmlspecialchars($item['description']) ?></p>
-                <strong>₱<?= number_format($item['price'], 2) ?></strong>
-                <button class="add-to-cart-btn" data-id="<?= $item['id'] ?>" data-name="<?= htmlspecialchars($item['name'], ENT_QUOTES) ?>" data-price="<?= $item['price'] ?>">Add to Cart</button>
+                <div class="featured-content">
+                    <h3><?= htmlspecialchars($item['name']) ?></h3>
+                    <p><?= htmlspecialchars($item['description']) ?></p>
+                    <strong>₱<?= number_format($item['price'], 2) ?></strong>
+                    <button class="add-to-cart-btn" data-id="<?= $item['id'] ?>" data-name="<?= htmlspecialchars($item['name'], ENT_QUOTES) ?>" data-price="<?= $item['price'] ?>">
+                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                    </button>
+                </div>
             </div>
         <?php endwhile; ?>
     </div>
+</div>
 
-    <h2>🍔 All Menu Items</h2>
+        <div class="menu-section">
+            <div class="menu-header">
+                <h2 class="menu-title"><i class="fas fa-utensils"></i> All Menu Items</h2>
+                <div class="search-container">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search menu items...">
+                    </div>
+                </div>
+            </div>
     <div class="menu-grid">
         <?php while($item = $regular_result->fetch_assoc()): ?>
             <div class="card" data-id="<?= $item['id'] ?>">
@@ -338,9 +610,15 @@ body {
                     <button class="increment-btn" data-id="<?= $item['id'] ?>">+</button>
                 </div>
 
-                <button class="add-to-cart-btn" data-id="<?= $item['id'] ?>" disabled>Add to Cart</button>
+                <button class="add-to-cart-btn" data-id="<?= $item['id'] ?>" disabled>
+                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                </button>
             </div>
         <?php endwhile; ?>
+    </div>
+    <div id="no-results-message" style="display: none; text-align: center; padding: 40px; color: #666; font-size: 18px;">
+        <i class="fas fa-search" style="font-size: 48px; color: #1e3c72; margin-bottom: 20px; display: block;"></i>
+        No menu items found matching your search.
     </div>
 </div>
 
@@ -356,6 +634,27 @@ body {
 </div>
 
 <script>
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const menuItems = document.querySelectorAll('.card');
+        const noResultsMessage = document.getElementById('no-results-message');
+        let hasVisibleItems = false;
+        
+        menuItems.forEach(item => {
+            const name = item.querySelector('h3').textContent.toLowerCase();
+            const description = item.querySelector('p').textContent.toLowerCase();
+            
+            if (name.includes(searchTerm) || description.includes(searchTerm)) {
+                item.style.display = '';
+                hasVisibleItems = true;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        // Show/hide no results message
+        noResultsMessage.style.display = hasVisibleItems ? 'none' : 'block';
+    });
     
     const cards = document.querySelectorAll('.featured-card');
     let current = 0;
@@ -367,21 +666,18 @@ body {
             cards[current].classList.add('active');
         }, 3000);
     }
-
     
     const cartBtn = document.getElementById('cartBtn');
     const cartModal = document.getElementById('cartModal');
     const cartItemsDiv = document.getElementById('cartItems');
     const cartTotalSpan = document.getElementById('cartTotal');
     const closeCartBtn = document.getElementById('closeCart');
-
     
     function updateAddToCartBtn(id) {
         const qty = parseInt(document.getElementById(`qty-${id}`).textContent);
         const btn = document.querySelector(`.add-to-cart-btn[data-id="${id}"]`);
         btn.disabled = qty <= 0;
     }
-
     
     async function loadCart() {
         try {
@@ -419,17 +715,16 @@ body {
                 console.log('Cart items array:', data.items);
 
                 cartTotalSpan.textContent = total.toFixed(2);
-                cartBtn.textContent = `🛒 View Cart (${count})`;
+                    cartBtn.textContent = `🛒 Cart (${count})`;
             } else {
                 console.error('Error fetching cart data:', data.message || 'Unknown error');
-                cartBtn.textContent = `🛒 View Cart (Error)`;
+                    cartBtn.textContent = `🛒 Cart (Error)`;
             }
         } catch (error) {
             console.error('Error loading cart:', error);
-            cartBtn.textContent = `🛒 View Cart (Error)`;
+                cartBtn.textContent = `🛒 Cart (Error)`;
+            }
         }
-    }
-
     
     document.querySelectorAll('.add-to-cart-btn').forEach(button => {
         button.addEventListener('click', async () => {
@@ -516,7 +811,6 @@ body {
             }
         });
     });
-
     
     async function removeItem(menuItemId) {
         if (confirm('Are you sure you want to remove this item?')) {
@@ -539,7 +833,6 @@ body {
             }
         }
     }
-
     
     document.querySelectorAll('.increment-btn').forEach(button => {
         button.addEventListener('click', () => {
@@ -551,7 +844,6 @@ body {
             updateAddToCartBtn(id);
         });
     });
-
     
     document.querySelectorAll('.decrement-btn').forEach(button => {
         button.addEventListener('click', () => {
@@ -565,7 +857,6 @@ body {
             }
         });
     });
-
     
     cartBtn.addEventListener('click', async () => {
         if(cartModal.style.display === 'block'){
@@ -579,21 +870,111 @@ body {
     closeCartBtn.addEventListener('click', () => {
         cartModal.style.display = 'none';
     });
-
     
     window.addEventListener('click', e => {
         if (e.target === cartModal) {
             cartModal.style.display = 'none';
         }
     });
-
     
     document.querySelectorAll('.add-to-cart-btn').forEach(button => {
         updateAddToCartBtn(button.getAttribute('data-id'));
     });
 
-    
-    loadCart();
+        loadCart();
+
+        // Enhanced carousel functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const carousel = document.querySelector('.featured-carousel');
+            const cards = Array.from(document.querySelectorAll('.featured-card'));
+            const dots = document.querySelector('.carousel-dots');
+            const prevBtn = document.querySelector('.prev-btn');
+            const nextBtn = document.querySelector('.next-btn');
+            
+            let currentIndex = 0;
+            let interval;
+
+            // Create dots
+            cards.forEach((_, i) => {
+                const dot = document.createElement('div');
+                dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+                dot.addEventListener('click', () => goToSlide(i));
+                dots.appendChild(dot);
+            });
+
+            function updateCards() {
+                cards.forEach((card, i) => {
+                    card.className = 'featured-card';
+                    if (i === currentIndex) {
+                        card.classList.add('active');
+                    } else if (i === (currentIndex - 1 + cards.length) % cards.length) {
+                        card.classList.add('prev');
+                    } else if (i === (currentIndex + 1) % cards.length) {
+                        card.classList.add('next');
+                    }
+                });
+
+                // Update dots
+                Array.from(dots.children).forEach((dot, i) => {
+                    dot.classList.toggle('active', i === currentIndex);
+                });
+            }
+
+            function nextSlide() {
+                currentIndex = (currentIndex + 1) % cards.length;
+                updateCards();
+            }
+
+            function prevSlide() {
+                currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+                updateCards();
+            }
+
+            function goToSlide(index) {
+                currentIndex = index;
+                updateCards();
+                resetInterval();
+            }
+
+            function resetInterval() {
+                clearInterval(interval);
+                interval = setInterval(nextSlide, 5000);
+            }
+
+            // Event listeners
+            prevBtn.addEventListener('click', () => {
+                prevSlide();
+                resetInterval();
+            });
+
+            nextBtn.addEventListener('click', () => {
+                nextSlide();
+                resetInterval();
+            });
+
+            // Initialize
+            updateCards();
+            resetInterval();
+
+            // Search functionality
+            const searchInput = document.getElementById('menuSearch');
+            const menuItems = document.querySelectorAll('.card');
+
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                menuItems.forEach(item => {
+                    const name = item.querySelector('h3').textContent.toLowerCase();
+                    const description = item.querySelector('p').textContent.toLowerCase();
+                    
+                    if (name.includes(searchTerm) || description.includes(searchTerm)) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
 </script>
 
 </body>

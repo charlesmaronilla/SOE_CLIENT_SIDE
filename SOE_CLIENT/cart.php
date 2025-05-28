@@ -29,13 +29,13 @@
             flex: 1;
             text-align: right;
             font-weight: bold;
-            color: #e67e22;
+            color:rgb(52, 88, 165);
         }
         .remove-btn {
             flex: 0;
             background: none;
             border: none;
-            color: #e74c3c;
+            color:rgb(186, 201, 51);
             font-size: 22px;
             cursor: pointer;
         }

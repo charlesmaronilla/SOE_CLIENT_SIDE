@@ -35,6 +35,9 @@ $regular_result = $stmt->get_result();
 <html>
 <head>
     <title><?= htmlspecialchars($stall['name']) ?> - Stall Menu</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/view_cart.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         
         body {
@@ -53,6 +56,7 @@ $regular_result = $stmt->get_result();
 }
 .stall-header {
     margin-bottom: 20px;
+    
 }
 .stall-header h2 {
     margin: 0;
@@ -75,27 +79,50 @@ $regular_result = $stmt->get_result();
 .review-btn:hover {
     background-color: #cf711d;
 }
+.featured-section {
+    margin-top: -20px;
+    position: relative;
+    background: linear-gradient(135deg,rgb(113, 120, 133) 0%,rgb(78, 105, 151) 100%);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 50px;
+    overflow: hidden;
+}
 .featured-carousel {
     position: relative;
-    width: 100%;
-    height: 260px;
-    overflow: hidden;
-    margin-bottom: 40px;
+    height: 400px;
+    margin: 0 auto;
+
 }
+
+.featured-section h2 {
+    color: white;
+    font-size: 28px;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+}
+
+.featured-section h2 i {
+    font-size: 24px;
+}
+
 .featured-card {
     position: absolute;
-    top: 0;
+    top: 10px;
     left: 50%;
-    transform: translateX(-50%);
-    width: 260px;
-    background: #fff;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    text-align: center;
+    transform: translateX(-50%) scale(0.8);
+    height: 400px;
+    width: 100%;
+    max-width: 1200px;
+    color: white;
+    border-radius: 20px;
+    padding: 0;
     opacity: 0;
-    transition: opacity 0.5s ease-in-out;
-    z-index: 0;
+    transition: all 0.5s ease;
+    pointer-events: none;
 }
 .featured-card img {
     width: 100%;
@@ -105,90 +132,216 @@ $regular_result = $stmt->get_result();
 }
 .featured-card.active {
     opacity: 1;
-    z-index: 1;
+    transform: translateX(-50%) scale(1);
+    pointer-events: all;
+    z-index: 2;
+}
+.menu-section {
+    margin-top: 60px;
+}
+.menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+.menu-title {
+    color: #1e3c72;
+    font-size: 35px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-container {
+    position: relative;
+    width: 300px;
+}
+.search-box input {
+    width: 100%;
+    padding: 12px 20px;
+    padding-left: 40px;
+    border: 2px solid #e8f0fe;
+    border-radius: 10px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+.search-box input:focus {
+    border-color: #2a5298;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+}
+.search-box i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #1e3c72;
 }
 .menu-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 20px;
 }
+
 .card {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 10px;
-    background-color: #fff;
-    text-align: center;
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transform-origin: center bottom;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
 .card img {
     width: 100%;
-    height: 130px;
+    height: 180px;
     object-fit: cover;
-    border-radius: 6px;
+    border-radius: 10px;
 }
-.card h3 {
-    margin: 10px 0 5px;
+
+.menu-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
-.card p {
+
+.menu-name {
+    color: #333;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.menu-description {
+    color: #666;
     font-size: 14px;
-    color: #555;
+    margin: 0;
+    line-height: 1.4;
 }
-.card strong {
-    color: #e67e22;
-    display: block;
-    margin-top: 8px;
+
+.menu-price {
+    color: #1e3c72;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 5px 0;
 }
-.add-to-cart-btn {
-    margin-top: 10px;
-    padding: 8px 12px;
-    background-color: #e67e22;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-}
-.add-to-cart-btn:hover {
-    background-color: #cf711d;
-}
+
 .quantity-controls {
-    margin-top: 10px;
+    margin-top: auto;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 6px;
+    gap: 15px;
+    margin-bottom: 10px;
 }
-.qty-btn {
-    background-color: #ddd;
+
+.quantity-controls button {
+    background-color: #1b4d4d;
+    color: white;
     border: none;
-    padding: 6px 10px;
-    font-size: 16px;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    font-size: 18px;
     cursor: pointer;
-    border-radius: 4px;
-    user-select: none;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-.qty-input {
-    width: 30px;
+
+.quantity-controls button:hover {
+    background-color: #2c7a7a;
+}
+
+.quantity-display {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    min-width: 30px;
     text-align: center;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-    pointer-events: none;
 }
+
+.add-to-cart-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.add-to-cart-btn:hover {
+    transform: translateY(-2px);
+}
+
+.add-to-cart-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.cart-button {
+    position: fixed;
+    top: 15px;
+    right: 30px;
+    padding: 12px 25px;
+    background: white;
+    color: #1e3c72;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+    z-index: 1001;
+}
+
+.cart-button:hover {
+    transform: translateY(-2px);
+}
+
 
 #cartBtn {
     position: fixed;
-    top: 20px;
-    right: 20px;
-    background-color: #e67e22;
-    color: white;
+    top: 10px;
+    right: 30px;
+    padding: 12px 25px;
+    background: white;
+    color: #1e3c72;
     border: none;
-    padding: 12px 18px;
-    border-radius: 5px;
+    border-radius: 8px;
+    font-weight: 600;
     cursor: pointer;
-    font-weight: bold;
-    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+    z-index: 1001;
 }
+
+#cartBtn:hover {
+    transform: translateY(-2px);
+}
+
 #cartModal {
     display: none;
     position: fixed;
@@ -256,19 +409,213 @@ $regular_result = $stmt->get_result();
     opacity: 1;
 }
 
+#no-results-message {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-size: 18px;
+    background: white;
+    border-radius: 15px;
+    margin-top: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.sidebar {
+    width: 240px;
+    background-color: rgba(0, 43, 92, 0.9);
+    border-radius: 10px;
+    margin-top: 20px;
+    color: white;
+    height: 100vh;
+    padding: 20px;
+    position: fixed;
+    top: 60px;
+    left: 0;
+}
+
+.sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #fff;
+    text-decoration: none;
+    padding: 12px 15px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    margin-bottom: 8px;
+}
+
+.sidebar a i {
+    font-size: 16px;
+    min-width: 20px;
+    text-align: center;
+}
+
+.sidebar a:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.header {
+    margin-top: -50px;
+    margin-bottom: 30px;
+}
+
+.stall-info-container {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 50px;
+}
+
+.stall-info {
+    flex: 1;
+}
+
+.stall-info h1 {
+    font-size: 32px;
+    color: #1e3c72;
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.stall-description {
+    color: #666;
+    font-size: 16px;
+    margin-bottom: 0;
+}
+
+.review-btn {
+    display: flex;
+    align-items: center;       
+    justify-content: center;    
+    width: 150px;
+    height: 40px;
+    background: rgb(31, 99, 163);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    margin-left: 1.25rem;
+    font-size: 1rem;
+}
+
+
+.review-btn:hover {
+    background:rgb(39, 102, 184);
+    transform: translateY(-2px);
+}
+
     </style>
 </head>
 <body>
+    <!-- Header -->
+    <header class="admin-header">
+        <div class="header-brand">
+            <img src="Picture/logo1.png" alt="EZ-Order" class="header-logo">   
+        </div>
+    </header>
 
-<a href="client_dashboard.php" class="back-btn">← Back to Dashboard</a>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logoo-wrapper">
+            <img src="Picture/logo2.png" alt="EZ-Order Logo" class="sidebar-logo">
+            <div class="logoo">EZ-ORDER</div>
+            <div class="divider"></div> 
+            <div class="tagline">"easy orders, zero hassle"</div>
+        </div>
+        <h2>🍽 Stalls</h2>
+        <?php 
+        $stall_query = "SELECT * FROM stalls";
+        $stall_result = $conn->query($stall_query);
+        while($stall_item = $stall_result->fetch_assoc()): ?>
+            <a href="stall_dashboard.php?stall_id=<?= $stall_item['id'] ?>">
+                <i class="fas fa-store"></i> <?= htmlspecialchars($stall_item['name']) ?>
+            </a>
+        <?php endwhile; ?>
+    </div>
 
-<div class="stall-header">
-    <h2><?= htmlspecialchars($stall['name']) ?></h2>
-    <p><?= htmlspecialchars($stall['description']) ?></p>
-    <a href="ratings.php?stall_id=<?= $stall_id ?>" class="review-btn">Review & Ratings</a>
+    <!-- Main Content -->
+    <div class="content">
+        <div class="header">
+            <a href="client_dashboard.php" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Stall Info Container -->
+        <div class="stall-info-container">
+            <div class="stall-info">
+                <h1><?= htmlspecialchars($stall['name']) ?></h1>
+                <p class="stall-description"><?= htmlspecialchars($stall['description'] ?? 'Specialty foods and beverages.') ?></p>
+            </div>
+            <a href="ratings.php?stall_id=<?= $stall_id ?>" class="review-btn">Review & Ratings</a>
+        </div>
+
+        <div class="featured-section">
+    
+            <div class="featured-carousel">
+                <?php while($item = $featured_result->fetch_assoc()): ?>
+                    <div class="featured-card" data-id="<?= $item['id'] ?>">
+                        <img src="assets/images/<?= htmlspecialchars($item['image']) ?>" alt="<?= htmlspecialchars($item['name']) ?>">
+                        <div class="featured-content">
+                            <h3><?= htmlspecialchars($item['name']) ?></h3>
+                            <p><?= htmlspecialchars($item['description']) ?></p>
+                            <strong>₱<?= number_format($item['price'], 2) ?></strong>
+                            <button class="add-to-cart-btn" data-id="<?= $item['id'] ?>" data-name="<?= htmlspecialchars($item['name'], ENT_QUOTES) ?>" data-price="<?= $item['price'] ?>">
+                                <i class="fas fa-shopping-cart"></i> Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                <?php endwhile; ?>
+            </div>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-header">
+                <h2 class="menu-title"><i class="fas fa-utensils"></i> Menu</h2>
+                <div class="search-container">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search menu items...">
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-grid">
+                <?php while($item = $regular_result->fetch_assoc()): ?>
+                    <div class="card">
+                        <img src="assets/images/<?= htmlspecialchars($item['image']) ?>" alt="<?= htmlspecialchars($item['name']) ?>">
+                        <div class="menu-info">
+                            <h3 class="menu-name"><?= htmlspecialchars($item['name']) ?></h3>
+                            <p class="menu-description"><?= htmlspecialchars($item['description']) ?></p>
+                            <div class="menu-price">₱<?= number_format($item['price'], 2) ?></div>
+                        </div>
+                        <div class="quantity-controls">
+                            <button class="qty-btn" data-action="decrease">−</button>
+                            <input type="text" class="qty-input" value="1" size="1" readonly>
+                            <button class="qty-btn" data-action="increase">+</button>
+                        </div>
+                        <button class="add-to-cart-btn" data-id="<?= $item['id'] ?>" data-name="<?= htmlspecialchars($item['name'], ENT_QUOTES) ?>" data-price="<?= $item['price'] ?>">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+                    </div>
+                <?php endwhile; ?>
+            </div>
+
+            <div id="no-results-message" style="display: none;">
+                <i class="fas fa-search" style="font-size: 48px; color: #1e3c72; margin-bottom: 20px; display: block;"></i>
+                No menu items found matching your search.
+            </div>
+        </div>
 </div>
 
-<button id="cartBtn" onclick="window.location.href='view_cart.php'">View Cart (0)</button>
+    <button class="cart-button" id="cartBtn" onclick="window.location.href='view_cart.php'">🛒 View Cart (0)</button>
 
 <div id="cartModal" class="cart-modal" style="display:none;">
     <h3>Shopping Cart <span class="close-cart" id="closeCart">&times;</span></h3>
@@ -280,38 +627,6 @@ $regular_result = $stmt->get_result();
 </div>
 
 <div id="toast" class="toast-notification"></div>
-
-<h3>Featured Items</h3>
-<div class="featured-carousel">
-    <?php $first = true; ?>
-    <?php while($item = $featured_result->fetch_assoc()): ?>
-        <div class="featured-card <?= $first ? 'active' : '' ?>">
-            <img src="assets/images/<?= htmlspecialchars($item['image']) ?>" alt="<?= htmlspecialchars($item['name']) ?>">
-            <h3><?= htmlspecialchars($item['name']) ?></h3>
-            <p><?= htmlspecialchars($item['description']) ?></p>
-            <strong>₱<?= number_format($item['price'], 2) ?></strong>
-            <button class="add-to-cart-btn" data-id="<?= $item['id'] ?>" data-name="<?= htmlspecialchars($item['name'], ENT_QUOTES) ?>" data-price="<?= $item['price'] ?>" data-default-qty="1">Add to Cart</button>
-        </div>
-    <?php $first = false; endwhile; ?>
-</div>
-
-<h3>All Menu Items</h3>
-<div class="menu-grid">
-    <?php while($item = $regular_result->fetch_assoc()): ?>
-        <div class="card">
-            <img src="assets/images/<?= htmlspecialchars($item['image']) ?>" alt="<?= htmlspecialchars($item['name']) ?>">
-            <h3><?= htmlspecialchars($item['name']) ?></h3>
-            <p><?= htmlspecialchars($item['description']) ?></p>
-            <strong>₱<?= number_format($item['price'], 2) ?></strong>
-            <div class="quantity-controls">
-                <button class="qty-btn" data-action="decrease">-</button>
-                <input type="text" class="qty-input" value="1" size="1" readonly>
-                <button class="qty-btn" data-action="increase">+</button>
-            </div>
-            <button class="add-to-cart-btn" data-id="<?= $item['id'] ?>" data-name="<?= htmlspecialchars($item['name'], ENT_QUOTES) ?>" data-price="<?= $item['price'] ?>">Add to Cart</button>
-        </div>
-    <?php endwhile; ?>
-</div>
 
 <script>
 const cartBtn = document.getElementById('cartBtn');
@@ -519,8 +834,30 @@ if (featuredCards.length > 0) {
     }, 3000);
 }
 
+    // Add search functionality
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const menuItems = document.querySelectorAll('.card');
+        const noResultsMessage = document.getElementById('no-results-message');
+        let hasVisibleItems = false;
+        
+        menuItems.forEach(item => {
+            const name = item.querySelector('.menu-name').textContent.toLowerCase();
+            const description = item.querySelector('.menu-description').textContent.toLowerCase();
+            
+            if (name.includes(searchTerm) || description.includes(searchTerm)) {
+                item.style.display = '';
+                hasVisibleItems = true;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        // Show/hide no results message
+        noResultsMessage.style.display = hasVisibleItems ? 'none' : 'block';
+    });
+
 </script>
 
 </body>
-</html>
 </html>
