@@ -31,6 +31,7 @@ CREATE TABLE `menu_items` (
   `image` varchar(255) DEFAULT NULL,
   `is_featured` tinyint(1) DEFAULT '0',
   `available` tinyint(1) DEFAULT '1',
+  `category` varchar(50) DEFAULT 'Food',
   PRIMARY KEY (`id`),
   KEY `stall_id` (`stall_id`),
   CONSTRAINT `menu_items_ibfk_1` FOREIGN KEY (`stall_id`) REFERENCES `stalls` (`id`)
@@ -43,7 +44,7 @@ CREATE TABLE `menu_items` (
 
 LOCK TABLES `menu_items` WRITE;
 /*!40000 ALTER TABLE `menu_items` DISABLE KEYS */;
-INSERT INTO `menu_items` VALUES (1,1,'Espresso','Strong and rich espresso shot',80.00,'espresso.jpg',1,1),(2,1,'Cappuccino','Espresso with steamed milk foam',110.00,'cappuccino.jpg',0,1),(3,1,'Cold Brew','Smooth cold brewed coffee',130.00,'cold_brew.jpg',1,1),(4,2,'Classic Cheeseburger','Juicy beef patty with cheese',150.00,'classic_cheeseburger.jpg',1,1),(5,2,'Bacon Burger','Beef patty with crispy bacon',170.00,'bacon_burger.jpg',0,1),(6,2,'Veggie Burger','Grilled vegetable patty with lettuce and tomato',140.00,'veggie_burger.jpg',1,1);
+INSERT INTO `menu_items` VALUES (1,1,'Espresso','Strong and rich espresso shot',80.00,'espresso.jpg',1,1,'Beverage'),(2,1,'Cappuccino','Espresso with steamed milk foam',110.00,'cappuccino.jpg',0,1,'Beverage'),(3,1,'Cold Brew','Smooth cold brewed coffee',130.00,'cold_brew.jpg',1,1,'Beverage'),(4,2,'Classic Cheeseburger','Juicy beef patty with cheese',150.00,'classic_cheeseburger.jpg',1,1,'Food'),(5,2,'Bacon Burger','Beef patty with crispy bacon',170.00,'bacon_burger.jpg',0,1,'Food'),(6,2,'Veggie Burger','Grilled vegetable patty with lettuce and tomato',140.00,'veggie_burger.jpg',1,1,'Food');
 /*!40000 ALTER TABLE `menu_items` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

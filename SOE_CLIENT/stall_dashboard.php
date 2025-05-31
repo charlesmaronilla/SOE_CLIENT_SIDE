@@ -19,13 +19,13 @@ if (!$stall) {
 }
 
 
-$stmt = $conn->prepare("SELECT * FROM menu_items WHERE is_featured = 1 AND available = 1 AND stall_id = ?");
+$stmt = $conn->prepare("SELECT * FROM menu_items WHERE is_featured = 1 AND available = 1 AND stall_id = ? ORDER BY category");
 $stmt->bind_param("i", $stall_id);
 $stmt->execute();
 $featured_result = $stmt->get_result();
 
 
-$stmt = $conn->prepare("SELECT * FROM menu_items WHERE is_featured = 0 AND available = 1 AND stall_id = ?");
+$stmt = $conn->prepare("SELECT * FROM menu_items WHERE is_featured = 0 AND available = 1 AND stall_id = ? ORDER BY category, name");
 $stmt->bind_param("i", $stall_id);
 $stmt->execute();
 $regular_result = $stmt->get_result();
@@ -46,8 +46,9 @@ $regular_result = $stmt->get_result();
     padding: 20px;
 }
 .back-btn {
+    margin-top: -160px;
     display: inline-block;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     padding: 8px 16px;
     background-color: #2c3e50;
     color: white;
@@ -55,86 +56,216 @@ $regular_result = $stmt->get_result();
     border-radius: 5px;
 }
 .stall-header {
-    margin-bottom: 20px;
-    
-}
-.stall-header h2 {
-    margin: 0;
-}
-.stall-header p {
-    color: #555;
+    margin-top: -90px;
 }
 
-.review-btn {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 8px 16px;
-    background-color: #e67e22;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
+.content {
+    flex: 1;
+    margin-left: 280px;
+    padding: 90px 30px 30px;
 }
-.review-btn:hover {
-    background-color: #cf711d;
-}
-.featured-section {
-    margin-top: -20px;
-    position: relative;
-    background: linear-gradient(135deg,rgb(113, 120, 133) 0%,rgb(78, 105, 151) 100%);
-    border-radius: 20px;
-    padding: 30px;
-    margin-bottom: 50px;
-    overflow: hidden;
-}
+
+
 .featured-carousel {
     position: relative;
     height: 400px;
     margin: 0 auto;
-
-}
-
-.featured-section h2 {
-    color: white;
-    font-size: 28px;
-    margin-bottom: 25px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    position: relative;
-}
-
-.featured-section h2 i {
-    font-size: 24px;
+    z-index: 2;
 }
 
 .featured-card {
     position: absolute;
-    top: 10px;
+    top: -1px;
     left: 50%;
     transform: translateX(-50%) scale(0.8);
-    height: 400px;
     width: 100%;
-    max-width: 1200px;
-    color: white;
+    max-width: 800px;
+    height: 100%;
+    max-height: 480px;
     border-radius: 20px;
-    padding: 0;
+    padding: 20px;
     opacity: 0;
     transition: all 0.5s ease;
     pointer-events: none;
+    background: linear-gradient(135deg, rgb(133, 114, 113) 0%, rgb(78, 105, 151) 100%);
+
 }
-.featured-card img {
-    width: 100%;
-    height: 140px;
-    object-fit: cover;
-    border-radius: 6px;
-}
+
 .featured-card.active {
     opacity: 1;
     transform: translateX(-50%) scale(1);
     pointer-events: all;
     z-index: 2;
+}
+
+.featured-card.prev,
+.featured-card.next {
+    opacity: 0.5;
+    z-index: 1;
+}
+
+.featured-card.prev {
+    transform: translateX(-150%) scale(0.8);
+}
+
+.featured-card.next {
+    transform: translateX(50%) scale(0.8);
+}
+
+.featured-section {
+    margin-top: 20px;
+    position: relative;
+    background: transparent;
+    padding: 30px;
+    margin-bottom: 50px;
+    overflow: hidden;
+    min-height: 500px;
+    display: flex;
+    align-items: stretch;
+}
+
+.featured-carousel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 100%;
+}
+
+.featured-card {
+    flex: 1 1 calc(33.333% - 20px); /* Three cards per row */
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 100%;
+    max-width: 1400px;
+    height: 500px;
+    margin-top: -20px;
+    
+}
+
+.featured-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    flex-grow: 1;
+}
+
+.featured-content {
+    padding: 15px;
+    background: transparent;
+    position: relative;
+    z-index: 2;
+}
+
+.featured-content h3 {
+    margin-left: -10px;
+    font-size: 30px;
+    color:rgb(43, 46, 53);
+}
+
+.featured-content p {
+    margin-left: 5px;
+    font-size: 16px;
+    color:rgb(59, 67, 82);
+    margin-bottom: 4px;
+    line-height: 1.5;
+}
+.category {
+    display: inline-block;
+    padding: 4px 12px;
+    background:rgba(238, 255, 84, 0.99);
+    color: #1e3c72;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+.featured-content strong {
+    margin-left: 7px;
+    font-size: 28px;
+    color:rgb(51, 83, 141);
+}
+
+.quantity-contr {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.quantity-contr button {
+    margin-left: -420px;
+    margin-right: 420px;
+    width: 35px;
+    height: 35px;
+    background-color:rgb(9, 64, 100);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.quantity-contr button:hover {
+    background-color: #2980b9;
+}
+
+.quantity-display {
+    margin-left: -420px;
+    margin-right: 420px;
+    width: 40px;
+    height: 35px;
+    background-color: #f2f2f2;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    text-align: center;
+    line-height: 35px;
+    font-size: 16px;
+    font-weight: 600;
+    user-select: none;
+}
+
+.featured-btn button {
+    width: 18%;
+    margin-top: 12px;
+    padding: 10px 15px;
+    background-color:rgb(34, 64, 121);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.featured-btn button :hover {
+    background-color:rgb(45, 104, 158);
+}
+
+.featured-btn button i {
+    font-size: 18px;
+}
+
+
+.carousel-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    z-index: 3;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
 }
 .menu-section {
     margin-top: 60px;
@@ -155,7 +286,7 @@ $regular_result = $stmt->get_result();
 
 .search-container {
     position: relative;
-    width: 300px;
+    width: 340px;
 }
 .search-box input {
     width: 100%;
@@ -179,6 +310,8 @@ $regular_result = $stmt->get_result();
     color: #1e3c72;
 }
 .menu-grid {
+    position: relative;
+    min-height: 200px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 30px;
@@ -208,6 +341,105 @@ $regular_result = $stmt->get_result();
     height: 180px;
     object-fit: cover;
     border-radius: 10px;
+}
+
+
+.card-content {
+    padding: 20px;
+}
+
+.card h3 {
+    color:rgb(43, 46, 53);
+    margin-bottom: 8px;
+    font-size: 18px;
+}
+
+.card p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+.card strong {
+    color:rgb(83, 109, 153);
+    font-size: 20px;
+    display: block;
+    margin-bottom: 15px;
+}
+.category-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    background:rgba(238, 255, 84, 0.99);
+    color: #1e3c72;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+.quantity-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.quantity-contr button {
+    margin-left: -505px;
+    margin-right: 505px;
+    width: 35px;
+    height: 35px;
+    background-color:rgb(9, 64, 100);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.quantity-contr button:hover {
+    background-color: #2980b9;
+}
+
+.quantity-display {
+    margin-left: -505px;
+    margin-right: 505px;
+    width: 40px;
+    height: 35px;
+    background-color: #f2f2f2;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    text-align: center;
+    line-height: 35px;
+    font-size: 16px;
+    font-weight: 600;
+    user-select: none;
+}
+
+.add-to-cart-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.add-to-cart-btn:hover {
+    transform: translateY(-2px);
+}
+
+.add-to-cart-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .menu-info {
@@ -273,31 +505,10 @@ $regular_result = $stmt->get_result();
     text-align: center;
 }
 
-.add-to-cart-btn {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-}
-
-.add-to-cart-btn:hover {
-    transform: translateY(-2px);
-}
-
-.add-to-cart-btn:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-    transform: none;
-}
 
 .cart-button {
     position: fixed;
-    top: 15px;
+    top: 10px;
     right: 30px;
     padding: 12px 25px;
     background: white;
@@ -317,7 +528,6 @@ $regular_result = $stmt->get_result();
 .cart-button:hover {
     transform: translateY(-2px);
 }
-
 
 #cartBtn {
     position: fixed;
@@ -342,89 +552,150 @@ $regular_result = $stmt->get_result();
     transform: translateY(-2px);
 }
 
-#cartModal {
-    display: none;
+.cart-modal {
     position: fixed;
-    top: 70px;
-    right: 20px;
-    width: 320px;
-    max-height: 400px;
+    top: 80px;
+    right: 30px;
+    width: 350px;
     background: white;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    overflow-y: auto;
-    z-index: 1000;
+    border-radius: 15px;
+    box-shadow: 0 4px 25px rgba(0,0,0,0.15);
+    z-index: 1001;
+    padding: 20px;
 }
-#cartModal header {
-    padding: 12px;
-    font-weight: bold;
-    background-color: #f39c12;
-    color: white;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    position: relative;
-}
-#cartModal header button {
-    position: absolute;
-    right: 10px;
-    top: 8px;
-    background: none;
-    border: none;
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
-}
-#cartItems {
-    padding: 10px 15px;
-}
-.cart-item {
+
+.cart-modal h3 {
+    color: #1e3c72;
+    margin-top: -8px;
     margin-bottom: 10px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
-#cartTotal {
-    padding: 10px 15px;
-    font-weight: bold;
-    border-top: 1px solid #ccc;
-    background: #fafafa;
+
+.cart-item {
+    padding: 12px 0;
+    border-bottom: 1px solid #e8f0fe;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+.close-cart {
+    color: #1e3c72;
+    cursor: pointer;
+    font-size: 24px;
+}
+
+.cart-total {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 2px solid #e8f0fe;
     text-align: right;
+    color: #1e3c72;
+    font-weight: bold;
+    font-size: 18px;
 }
+
+.view-cart-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 900;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+}
+
+.view-cart-btn:hover {
+    opacity: 0.9;
+}
+
+.card {
+    animation: fadeIn 3.5s ease backwards;
+}
+
+.card:nth-child(n) {
+    animation-delay: calc(0.1s * var(--i, 0));
+        }
+.checkout-btn {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.checkout-btn:hover {
+    background-color: #34495e;
+}
+
 .toast-notification {
     position: fixed;
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: #4CAF50;
+    background-color:rgb(224, 228, 31);
     color: white;
     padding: 12px 24px;
     border-radius: 4px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     z-index: 1000;
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
+   
 }
 
 .toast-notification.show {
     opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
 }
 
-#no-results-message {
-    text-align: center;
-    padding: 40px;
-    color: #666;
-    font-size: 18px;
-    background: white;
-    border-radius: 15px;
-    margin-top: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+.admin-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background-color: #0f4c75;
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+}
+
+.header-logo {
+    margin-left: -10px;
+    margin-top: 5px;
+    height: 60px;
+    object-fit: contain;
 }
 
 .sidebar {
     width: 240px;
     background-color: rgba(0, 43, 92, 0.9);
     border-radius: 10px;
-    margin-top: 20px;
+    margin-top: 10px;
     color: white;
     height: 100vh;
     padding: 20px;
@@ -433,34 +704,71 @@ $regular_result = $stmt->get_result();
     left: 0;
 }
 
-.sidebar a {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    color: #fff;
-    text-decoration: none;
-    padding: 12px 15px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    margin-bottom: 8px;
+.sidebar .divider {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    margin: 1rem auto;
+    width: 90%;
 }
 
-.sidebar a i {
-    font-size: 16px;
-    min-width: 20px;
+.logoo-wrapper {
     text-align: center;
+    padding: 20px 0;
+}
+
+.logoo-wrapper img {
+    position: relative;
+    display: inline-block;
+    margin-left: -10px;
+    height: 150px;
+    width: 190px;
+}
+
+.logoo {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.tagline {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+.sidebar h2 {
+    font-size: 20px;
+    margin: 20px 0 15px 0;
+    color: white;
+}
+
+.sidebar a {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    transition: background 0.3s;
+    font-size: 15px;
 }
 
 .sidebar a:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
-.header {
-    margin-top: -50px;
-    margin-bottom: 30px;
+.tagline {
+    font-style: italic;
+    color: rgba(255,255,255,0.8);
+    font-size: 14px;
 }
+
 
 .stall-info-container {
+    margin-top: -80px;
     background: white;
     padding: 25px;
     border-radius: 15px;
@@ -468,7 +776,6 @@ $regular_result = $stmt->get_result();
     margin-bottom: 30px;
     display: flex;
     justify-content: space-between;
-    margin-bottom: 50px;
 }
 
 .stall-info {
@@ -509,6 +816,339 @@ $regular_result = $stmt->get_result();
 .review-btn:hover {
     background:rgb(39, 102, 184);
     transform: translateY(-2px);
+}
+
+.category-filter {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.category-btn {
+    padding: 8px 16px;
+    border: 2px solid #1e3c72;
+    background: white;
+    color: #1e3c72;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.category-btn:hover {
+    background: rgba(30, 60, 114, 0.1);
+}
+
+.category-btn.active {
+    background: #1e3c72;
+    color: white;
+}
+
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.search-box i {
+    position: absolute;
+    left: 15px;
+    color: #888;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 10px 10px 10px 35px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+}
+
+.visually-hidden {
+    position: absolute;
+    left: -9999px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+.featured-content {
+    padding: 15px;
+    background: transparent;
+    position: relative;
+    z-index: 2;
+}
+
+.featured-content h3 {
+    margin-left: -10px;
+    font-size: 30px;
+    color:rgb(43, 46, 53);
+}
+
+.featured-content p {
+    margin-top: -20px;
+    margin-left: 5px;
+    font-size: 16px;
+    color:rgb(59, 67, 82);
+    margin-bottom: 4px;
+    line-height: 1.5;
+}
+.category {
+    display: inline-block;
+    padding: 4px 12px;
+    background:rgba(238, 255, 84, 0.99);
+    color: #1e3c72;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+.featured-content strong {
+    margin-left: 7px;
+    font-size: 28px;
+    color:rgb(51, 83, 141);
+}
+
+.quantity-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.quantity-controls button {
+    background-color: #1b4d4d;
+    color: white;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    justify-content: center;
+}
+
+.quantity-controls button:hover {
+    background-color: #2c7a7a;
+}
+
+.qty-display{
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    min-width: 30px;
+    text-align: center;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+.cart-modal {
+    position: fixed;
+    top: 80px;
+    right: 30px;
+    width: 350px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 25px rgba(0,0,0,0.15);
+    z-index: 1001;
+    padding: 20px;
+}
+
+.cart-modal h3 {
+    color: #1e3c72;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cart-item {
+    padding: 12px 0;
+    border-bottom: 1px solid #e8f0fe;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+.close-cart {
+    color: #1e3c72;
+    cursor: pointer;
+    font-size: 24px;
+}
+
+.cart-total {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 2px solid #e8f0fe;
+    text-align: right;
+    color: #1e3c72;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.view-cart-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 900;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+}
+
+.view-cart-btn:hover {
+    opacity: 0.9;
+}
+
+.card {
+    animation: fadeIn 3.5s ease backwards;
+}
+
+.card:nth-child(n) {
+    animation-delay: calc(0.1s * var(--i, 0));
+}
+
+
+#no-results-message {
+    margin-top: -85px;
+    margin-bottom: 50px;
+    display: none;
+    text-align: center;
+    color: #4b5563;
+    font-size: 18px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: all 0.3s ease-in-out;
+}
+
+#no-results-message i {
+    font-size: 56px;
+    color:rgb(21, 77, 168); 
+    margin-bottom: 20px;
+    display: block;
+    animation: bounce 1.5s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+.menu-grid {
+    position: relative;
+    min-height: 200px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 20px;
+}
+
+
+.confirm-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    z-index: 1003;
+}
+
+.confirm-modal h3 {
+    color:rgb(69, 74, 83);
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.confirm-modal p {
+    color: #666;
+    font-size: 16px;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.modal-btn {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.modal-btn:hover {
+    transform: translateY(-2px);
+}
+
+.cancel-modal-btn {
+    background: #f8f9fa;
+    color:rgb(67, 74, 87);
+}
+
+.confirm-modal-btn {
+    background: #ffd700;
+    color: #333;
+}
+
+.sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #fff;
+    text-decoration: none;
+    padding: 12px 15px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    margin-bottom: 8px;
+}
+
+.sidebar a i {
+    font-size: 16px;
+    min-width: 20px;
+    text-align: center;
+}
+
+.sidebar a:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
 
     </style>
@@ -554,310 +1194,569 @@ $regular_result = $stmt->get_result();
                 <h1><?= htmlspecialchars($stall['name']) ?></h1>
                 <p class="stall-description"><?= htmlspecialchars($stall['description'] ?? 'Specialty foods and beverages.') ?></p>
             </div>
-            <a href="ratings.php?stall_id=<?= $stall_id ?>" class="review-btn">Review & Ratings</a>
-        </div>
+    <a href="ratings.php?stall_id=<?= $stall_id ?>" class="review-btn">Review & Ratings</a>
+</div>
 
+          <!-- Featured Section -->
         <div class="featured-section">
-    
-            <div class="featured-carousel">
-                <?php while($item = $featured_result->fetch_assoc()): ?>
-                    <div class="featured-card" data-id="<?= $item['id'] ?>">
-                        <img src="assets/images/<?= htmlspecialchars($item['image']) ?>" alt="<?= htmlspecialchars($item['name']) ?>">
+    <div class="featured-carousel">
+                <?php 
+                $featured_count = 0;
+                while($item = $featured_result->fetch_assoc()): 
+                    $featured_count++;
+                ?>
+                    <div class="featured-card" data-category="<?= htmlspecialchars($item['category']) ?>" data-id="<?= $item['id'] ?>">
+                <img src="assets/images/<?= htmlspecialchars($item['image']) ?>" alt="<?= htmlspecialchars($item['name']) ?>">
                         <div class="featured-content">
-                            <h3><?= htmlspecialchars($item['name']) ?></h3>
-                            <p><?= htmlspecialchars($item['description']) ?></p>
-                            <strong>₱<?= number_format($item['price'], 2) ?></strong>
-                            <button class="add-to-cart-btn" data-id="<?= $item['id'] ?>" data-name="<?= htmlspecialchars($item['name'], ENT_QUOTES) ?>" data-price="<?= $item['price'] ?>">
-                                <i class="fas fa-shopping-cart"></i> Add to Cart
-                            </button>
-                        </div>
-                    </div>
-                <?php endwhile; ?>
+                <h3><?= htmlspecialchars($item['name']) ?></h3>
+                <p data-id="<?= htmlspecialchars($item['id']) ?>">
+                    <?= htmlspecialchars($item['description']) ?> - <span class="category"><?= htmlspecialchars($item['category']) ?></span></p>
+                <strong>₱<?= number_format($item['price'], 2) ?></strong>
+                
+                 <div class="featured-qty-btn">
+                <div class="quantity-contr ">
+                    <button class="decrement-btn" data-id="<?= $item['id'] ?>">−</button>
+                    <div class="quantity-display" id="qty-<?= $item['id'] ?>">0</div>
+                    <button class="increment-btn" data-id="<?= $item['id'] ?>">+</button>
+                </div>
+               </div>
+
+                <div class="featured-btn">
+                    <div class="add-btn ">
+                        <button class="add-to-cart-btn" data-id="<?= $item['id'] ?>">
+                         <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button></div>
+                  </div>          
+                 </div>
             </div>
-        </div>
+        <?php endwhile; ?>
+                <?php if ($featured_count === 0): ?>
+                    <div class="no-featured-items">
+                        <i class="fas fa-info-circle"></i>
+                        <p>No featured items available at the moment.</p>
+                    </div>
+                <?php endif; ?>
+            </div>
+            </div>
 
         <div class="menu-section">
             <div class="menu-header">
                 <h2 class="menu-title"><i class="fas fa-utensils"></i> Menu</h2>
                 <div class="search-container">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="searchInput" placeholder="Search menu items...">
+                    <div class="category-filter">
+                        <button class="category-btn active" data-category="all">All</button>
+                        <button class="category-btn" data-category="Meal">Meals</button>
+                        <button class="category-btn" data-category="Beverage">Beverages</button>
+                        <button class="category-btn" data-category="Dessert">Desserts</button>
                     </div>
+                 
+                <div class="search-box">
+                    <label for="searchInput" class="visually-hidden">Search Menu Items</label>
+                    <i class="fas fa-search"></i>
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        placeholder="Search menu items..." 
+                        aria-label="Search menu items"
+                    >
+                </div>
+
                 </div>
             </div>
 
             <div class="menu-grid">
                 <?php while($item = $regular_result->fetch_assoc()): ?>
-                    <div class="card">
-                        <img src="assets/images/<?= htmlspecialchars($item['image']) ?>" alt="<?= htmlspecialchars($item['name']) ?>">
-                        <div class="menu-info">
-                            <h3 class="menu-name"><?= htmlspecialchars($item['name']) ?></h3>
-                            <p class="menu-description"><?= htmlspecialchars($item['description']) ?></p>
-                            <div class="menu-price">₱<?= number_format($item['price'], 2) ?></div>
-                        </div>
-                        <div class="quantity-controls">
-                            <button class="qty-btn" data-action="decrease">−</button>
-                            <input type="text" class="qty-input" value="1" size="1" readonly>
-                            <button class="qty-btn" data-action="increase">+</button>
-                        </div>
-                        <button class="add-to-cart-btn" data-id="<?= $item['id'] ?>" data-name="<?= htmlspecialchars($item['name'], ENT_QUOTES) ?>" data-price="<?= $item['price'] ?>">
-                            <i class="fas fa-shopping-cart"></i> Add to Cart
-                        </button>
+                    <div class="card" data-id="<?= $item['id'] ?>" data-category="<?= htmlspecialchars($item['category']) ?>">
+                <img src="assets/images/<?= htmlspecialchars($item['image']) ?>" alt="<?= htmlspecialchars($item['name']) ?>">
+                        <div class="card-content">
+                            <h3><?= htmlspecialchars($item['name']) ?></h3>
+                            <p><?= htmlspecialchars($item['description']) ?></p>
+                            <strong>₱<?= number_format($item['price'], 2) ?></strong>
+                            <div class="category-tag"><?= htmlspecialchars($item['category']) ?></div>
+
+                <div class="quantity-controls">
+                    <button class="decrement-btn" data-id="<?= $item['id'] ?>">−</button>
+                    <div class="qty-display" id="qty-<?= $item['id'] ?>">0</div>
+                    <button class="increment-btn" data-id="<?= $item['id'] ?>">+</button>
+                </div>
+
+                        <button class="add-to-cart-btn" data-id="<?= $item['id'] ?>" disabled>
+                                <i class="fas fa-shopping-cart"></i> Add to Cart
+                            </button>
+                    </div>
                     </div>
                 <?php endwhile; ?>
             </div>
 
-            <div id="no-results-message" style="display: none;">
-                <i class="fas fa-search" style="font-size: 48px; color: #1e3c72; margin-bottom: 20px; display: block;"></i>
+            <div id="no-results-message">
+                <i class="fas fa-search"></i>
                 No menu items found matching your search.
             </div>
         </div>
 </div>
 
-    <button class="cart-button" id="cartBtn" onclick="window.location.href='view_cart.php'">🛒 View Cart (0)</button>
+<!-- Cart Implementation -->
+<div class="modal-overlay" id="modalOverlay" style="display: none;"></div>
+<button class="cart-button" id="cartBtn">🛒 View Cart (0)</button>
 
-<div id="cartModal" class="cart-modal" style="display:none;">
-    <h3>Shopping Cart <span class="close-cart" id="closeCart">&times;</span></h3>
+<div class="cart-modal" id="cartModal" style="display:none;">
+    <h3>EZ Tray<span class="close-cart" id="closeCart">&times;</span></h3>
     <div id="cartItems"></div>
     <div style="margin-top: 15px; text-align: right;">
         <strong>Total: ₱<span id="cartTotal">0.00</span></strong>
-        <button onclick="window.location.href='view_cart.php'" style="display: block; width: 100%; margin-top: 10px; padding: 10px; background-color: #e67e22; color: white; border: none; border-radius: 6px; cursor: pointer;">View Full Cart</button>
+        <button onclick="window.location.href='view_cart.php'" style="display: block; width: 100%; margin-top: 10px; padding: 10px; background-color:rgb(47, 66, 150); color: white; border: none; border-radius: 6px; cursor: pointer;">Go to Cart to Checkout</button>
     </div>
 </div>
 
-<div id="toast" class="toast-notification"></div>
+<!-- Confirmation Modal -->
+<div class="modal-overlay" id="confirmModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1002;">
+        <div class="confirm-modal">
+            <h3>Remove Item</h3>
+            <p>Are you sure you want to remove <span id="itemName"></span> from your cart?</p>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel-modal-btn" onclick="closeConfirmModal()">Cancel</button>
+                <button class="modal-btn confirm-modal-btn" onclick="confirmRemove()">Remove</button>
+            </div>
+    </div>
+</div>
 
 <script>
-const cartBtn = document.getElementById('cartBtn');
-const cartModal = document.getElementById('cartModal');
-const cartItemsDiv = document.getElementById('cartItems');
-const cartTotalSpan = document.getElementById('cartTotal');
-const closeCartBtn = document.getElementById('closeCart');
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM Content Loaded'); // Debug log
+            
+            // Get all necessary elements
+            const categoryBtns = document.querySelectorAll('.category-btn');
+            const searchInput = document.getElementById('searchInput');
+            const noResultsMessage = document.getElementById('no-results-message');
+            
+            console.log('Category buttons found:', categoryBtns.length); // Debug log
+            
+            
+            function filterItems() {
+                const selectedCategory = document.querySelector('.category-btn.active')?.getAttribute('data-category') || 'all';
+                const searchTerm = searchInput.value.toLowerCase().trim();
 
-let cart = [];
+                // Handle only .card (regular menu items)
+                const menuItems = document.querySelectorAll('.card');
+                let visibleCount = 0;
 
+                menuItems.forEach(item => {
+                    const itemCategory = item.getAttribute('data-category');
+                    const name = item.querySelector('h3')?.textContent.toLowerCase() || '';
+                    const description = item.querySelector('p')?.textContent.toLowerCase() || '';
 
-function loadCartFromDatabase() {
-    fetch('get_cart.php')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                cart = data.items;
-                updateCartCount();
-                // No need to render cart in modal on page load here
-            }
-        })
-        .catch(err => {
-            console.error('Error loading cart:', err);
-        });
-}
+                    const matchesCategory = selectedCategory === 'all' || itemCategory === selectedCategory;
+                    const matchesSearch = searchTerm === '' || name.includes(searchTerm) || description.includes(searchTerm);
 
-function saveCart() {
-    // This function is no longer needed as cart is managed server-side
-}
-
-function updateCartCount() {
-    const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
-    cartBtn.textContent = `🛒 View Cart (${totalQty})`;
-}
-
-function renderCart() {
-    cartItemsDiv.innerHTML = '';
-    if (cart.length === 0) {
-        cartItemsDiv.innerHTML = '<p>Your cart is empty.</p>';
-        cartTotalSpan.textContent = '0.00';
-        return;
-    }
-    let total = 0;
-    cart.forEach(item => {
-        total += item.price * item.qty;
-        const div = document.createElement('div');
-        div.className = 'cart-item';
-        div.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <strong>${item.name}</strong><br>
-                    ₱${item.price.toFixed(2)} x ${item.qty}
-                </div>
-                <button onclick="removeFromCart(${item.menu_item_id}, '${item.name.replace(/'/g, "\'")}')" style="background: #ff4444; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Remove</button>
-            </div>
-        `;
-        cartItemsDiv.appendChild(div);
-    });
-    cartTotalSpan.textContent = total.toFixed(2);
-}
-
-function showToast(message) {
-    const toast = document.getElementById('toast');
-    toast.textContent = message;
-    toast.classList.add('show');
-    
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 3000);
-}
-
-function addToCart(id, name, qty = 1) {
-    fetch('add_to_cart.php', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: `menu_item_id=${id}&quantity=${qty}`
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showToast(`${qty} x ${name} added to cart!`);
-            loadCartFromDatabase(); // Reload cart data after adding
-        } else {
-            alert(data.message || 'Failed to add to cart.');
-        }
-    })
-    .catch(err => {
-        console.error('Error:', err);
-        alert('Could not connect to server.');
-    });
-}
-
-function removeFromCart(menuItemId, itemName) {
-    if (confirm(`Are you sure you want to remove ${itemName} from your cart?`)) {
-        fetch('add_to_cart.php', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: `menu_item_id=${menuItemId}&quantity=0`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showToast(`${itemName} removed from cart`);
-                loadCartFromDatabase(); // Reload cart data after removing
-                if (cart.length === 1 && cart[0].menu_item_id === menuItemId) {
-                     // If removing the last item shown in modal, hide modal after reload
-                     cartModal.style.display = 'none';
-                }
-            } else {
-                alert(data.message || 'Failed to remove item from cart.');
-            }
-        })
-        .catch(err => {
-            console.error('Error:', err);
-            alert('Could not connect to server.');
-        });
-    }
-}
-
-document.addEventListener('DOMContentLoaded', loadCartFromDatabase);
-
-
-document.querySelectorAll('.add-to-cart-btn').forEach(button => {
-    button.addEventListener('click', () => {
-        const id = parseInt(button.getAttribute('data-id'));
-        const name = button.getAttribute('data-name');
-        let qty = 1; // Default quantity
-        const card = button.closest('.card, .featured-card');
-        if (card) {
-            const qtyInput = card.querySelector('.qty-input');
-            if (qtyInput) {
-                qty = parseInt(qtyInput.value) || 1;
-            } else {
-                // For featured items without explicit quantity control, use data-default-qty or default to 1
-                qty = parseInt(button.getAttribute('data-default-qty')) || 1;
-            }
-        }
-        if (qty > 0) {
-             addToCart(id, name, qty);
-        } else {
-             showToast('Quantity must be at least 1.');
-        }
-    });
-});
-
-
-document.querySelectorAll('.card').forEach(card => {
-    const qtyInput = card.querySelector('.qty-input');
-    if (qtyInput) {
-        card.querySelectorAll('.qty-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                let currentQty = parseInt(qtyInput.value);
-                if (btn.getAttribute('data-action') === 'increase') {
-                    qtyInput.value = currentQty + 1;
-                } else {
-                    if (currentQty > 1) {
-                        qtyInput.value = currentQty - 1;
+                    if (matchesCategory && matchesSearch) {
+                        item.style.display = '';
+                        visibleCount++;
+                    } else {
+                        item.style.display = 'none';
                     }
+                });
+
+                // Always show featured items regardless of filter
+                const featuredItems = document.querySelectorAll('.featured-card');
+                featuredItems.forEach(item => {
+                    item.style.display = '';
+                });
+
+                // Show/hide 'No results' message
+                noResultsMessage.style.display = visibleCount === 0 ? 'block' : 'none';
+            }
+   
+            // Add click event listeners to category buttons
+            categoryBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    console.log('Category button clicked:', btn.getAttribute('data-category')); // Debug log
+                    
+                    // Remove active class from all buttons
+                    categoryBtns.forEach(b => b.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    btn.classList.add('active');
+                    
+                    // Filter items
+                    filterItems();
+                });
+            });
+            
+            // Add input event listener to search box
+            if (searchInput) {
+                searchInput.addEventListener('input', () => {
+                    console.log('Search input changed:', searchInput.value); // Debug log
+                    filterItems();
+                });
+            }
+            
+            // Set initial active category
+            const defaultCategory = document.querySelector('.category-btn[data-category="all"]');
+            if (defaultCategory) {
+                defaultCategory.classList.add('active');
+            }
+            
+            // Initial filtering
+            filterItems();
+        });
+
+    const cartBtn = document.getElementById('cartBtn');
+    const cartModal = document.getElementById('cartModal');
+    const cartItemsDiv = document.getElementById('cartItems');
+    const cartTotalSpan = document.getElementById('cartTotal');
+    const closeCartBtn = document.getElementById('closeCart');
+    
+    function updateAddToCartBtn(id) {
+        const qty = parseInt(document.getElementById(`qty-${id}`).textContent);
+        const btn = document.querySelector(`.add-to-cart-btn[data-id="${id}"]`);
+        btn.disabled = qty <= 0;
+    }
+
+        let itemToRemove = null;
+        let itemToRemoveName = '';
+
+        function showConfirmModal(menuItemId, itemName) {
+            itemToRemove = menuItemId;
+            itemToRemoveName = itemName;
+            document.getElementById('itemName').textContent = itemName;
+            document.getElementById('confirmModal').style.display = 'block';
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').style.display = 'none';
+            document.body.style.overflow = ''; // Restore scrolling
+            itemToRemove = null;
+            itemToRemoveName = '';
+        }
+
+        function confirmRemove() {
+            if (itemToRemove) {
+                removeItemFromCart(itemToRemove);
+                closeConfirmModal();
+            }
+        }
+
+        async function removeItemFromCart(menuItemId) {
+            try {
+                const response = await fetch('add_to_cart.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: `menu_item_id=${menuItemId}&quantity=0`
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    await loadCart();
+                    // Show success message
+                    const toast = document.createElement('div');
+                    toast.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        background-color:rgb(224, 228, 31);
+                        color: white;
+                        padding: 12px 24px;
+                        border-radius: 4px;
+                        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                        z-index: 1000;
+                    `;
+                    toast.textContent = `${itemToRemoveName} removed from cart`;
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 3000);
+                } else {
+                    alert('Failed to remove item: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Could not connect to server');
+            }
+        }
+    
+    async function loadCart() {
+        try {
+            const response = await fetch('get_cart.php');
+            const data = await response.json();
+
+            if (data.success) {
+                cartItemsDiv.innerHTML = '';
+                let total = 0, count = 0;
+                
+                data.items.forEach(item => {
+                    item.price = parseFloat(item.price);
+                    total += item.price * item.qty;
+                        count += parseInt(item.qty);
+
+                    const div = document.createElement('div');
+                    div.classList.add('cart-item');
+                    div.innerHTML = `
+                            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0 10px;">
+                                <div style="margin-left: 5px;">
+                                <strong>${item.name}</strong><br>
+                                ₱${item.price.toFixed(2)} x ${item.qty}
+                            </div>
+                                <button onclick="showConfirmModal(${item.menu_item_id}, '${item.name.replace(/'/g, "\\'")}')" class="remove-btn">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                        </div>
+                    `;
+                    cartItemsDiv.appendChild(div);
+                });
+
+                cartTotalSpan.textContent = total.toFixed(2);
+                    cartBtn.innerHTML = `🛒 View Cart (${count})`;
+                    
+                    if (count > 0) {
+                        cartBtn.classList.add('has-items');
+                    } else {
+                        cartBtn.classList.remove('has-items');
+                    }
+            } else {
+                console.error('Error fetching cart data:', data.message || 'Unknown error');
+                    cartBtn.innerHTML = `🛒 View Cart (0)`;
+            }
+        } catch (error) {
+            console.error('Error loading cart:', error);
+                cartBtn.innerHTML = `🛒 View Cart (0)`;
+        }
+    }
+    
+    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+        button.addEventListener('click', async () => {
+            const id = button.getAttribute('data-id');
+            const card = button.closest('.card, .featured-card'); // Get the parent card
+            const name = card.querySelector('h3').textContent;
+
+            let quantity = 1; // Default quantity to 1
+
+            // Check if quantity controls exist (for regular items)
+            const qtyDisplay = card.querySelector('.quantity-display');
+            if (qtyDisplay) {
+                quantity = parseInt(qtyDisplay.textContent);
+            }
+
+            if (quantity > 0) {
+                try {
+                        // First, get the current cart to check for existing items
+                        const cartResponse = await fetch('get_cart.php');
+                        const cartData = await cartResponse.json();
+                        
+                        // Check if item already exists in cart
+                        let existingQty = 0;
+                        if (cartData.success && cartData.items) {
+                            const existingItem = cartData.items.find(item => item.menu_item_id === id);
+                            if (existingItem) {
+                                existingQty = parseInt(existingItem.qty);
+                                console.log(`Item already in cart with quantity: ${existingQty}`);
+                            }
+                        }
+
+                        // Add new quantity to existing quantity
+                        const totalQty = existingQty + quantity;
+                        console.log(`Adding to cart: ${id} with total quantity ${totalQty}`);
+
+                    const response = await fetch('add_to_cart.php', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                            body: `menu_item_id=${id}&quantity=${totalQty}`
+                    });
+
+                    console.log('Response status:', response.status);
+
+                    if (!response.ok) {
+                         console.error('HTTP error!', response.status, response.statusText);
+                         alert('HTTP error: ' + response.status);
+                         return;
+                    }
+
+                    const result = await response.json();
+
+                    console.log('add_to_cart.php response:', result);
+
+                    if(result.success) {
+                        console.log('Item added successfully, reloading cart...');
+                            // Show success message with combined quantity
+                        const toast = document.createElement('div');
+                        toast.style.cssText = `
+                            position: fixed;
+                            top: 20px;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            background-color:rgb(192, 202, 49);
+                            color: rgb(69, 74, 83);
+                            padding: 12px 24px;
+                            border-radius: 4px;
+                            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                            z-index: 1000;
+                        `;
+                            toast.textContent = existingQty > 0 
+                                ? `Updated ${name} quantity to ${totalQty} in cart!`
+                                : `Added ${quantity} x ${name} to cart!`;
+                        document.body.appendChild(toast);
+                        setTimeout(() => toast.remove(), 3000);
+
+                        // Reset quantity display & disable add button (only for regular items)
+                         if (qtyDisplay) {
+                            qtyDisplay.textContent = '0';
+                            updateAddToCartBtn(id);
+                         }
+
+                        // Reload cart display
+                        await loadCart();
+                        console.log('Cart reloaded.');
+
+                    } else {
+                        console.error('Server reported failure:', result.message);
+                        alert('Failed to add to cart: ' + result.message);
+                    }
+                } catch (error) {
+                    console.error('Error in fetch or processing response:', error);
+                    alert('Could not connect to server or process response');
+                }
+            }
+        });
+    });
+
+        cartBtn.addEventListener('click', async () => {
+            if(cartModal.style.display === 'block'){
+                cartModal.style.display = 'none';
+            } else {
+                await loadCart();
+                cartModal.style.display = 'block';
+            }
+        });
+
+        closeCartBtn.addEventListener('click', () => {
+            cartModal.style.display = 'none';
+        });
+        
+        window.addEventListener('click', e => {
+            if (e.target === cartModal) {
+                cartModal.style.display = 'none';
+            }
+        });
+        
+        document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+            updateAddToCartBtn(button.getAttribute('data-id'));
+        });
+
+        loadCart();
+
+        // Initialize featured carousel
+        const featuredCards = document.querySelectorAll('.featured-carousel .featured-card');
+        let currentFeatured = 0;
+
+        function showFeaturedCard(index) {
+            console.log('Showing featured card:', index); // Debug log
+            featuredCards.forEach((card, i) => {
+                card.classList.remove('active');
+                if (i === index) {
+                    card.classList.add('active');
                 }
             });
-        });
-    }
-});
+        }
 
-cartBtn.addEventListener('click', async (e) => {
-    e.preventDefault(); // Prevent default link behavior
-    if(cartModal.style.display === 'block'){
-        cartModal.style.display = 'none';
-    } else {
-        await loadCartFromDatabase(); // Ensure cart is loaded before showing
-        renderCart();
-        cartModal.style.display = 'block';
-    }
-});
-
-closeCartBtn.addEventListener('click', () => {
-    cartModal.style.display = 'none';
-});
-
-window.addEventListener('click', (e) => {
-    if (e.target === cartModal) {
-        cartModal.style.display = 'none';
-    }
-});
-
-// Initial load of cart count
-loadCartFromDatabase();
-
-// Carousel functionality (keep existing)
-const featuredCards = document.querySelectorAll('.featured-carousel .featured-card');
-let currentFeatured = 0;
-
-function showFeaturedCard(index) {
-    featuredCards.forEach(card => card.classList.remove('active'));
-    if (featuredCards[index]) {
-        featuredCards[index].classList.add('active');
-    }
-}
-
-if (featuredCards.length > 0) {
-    showFeaturedCard(currentFeatured);
-    setInterval(() => {
-        currentFeatured = (currentFeatured + 1) % featuredCards.length;
-        showFeaturedCard(currentFeatured);
-    }, 3000);
-}
-
-    // Add search functionality
-    document.getElementById('searchInput').addEventListener('input', function(e) {
-        const searchTerm = e.target.value.toLowerCase();
-        const menuItems = document.querySelectorAll('.card');
-        const noResultsMessage = document.getElementById('no-results-message');
-        let hasVisibleItems = false;
-        
-        menuItems.forEach(item => {
-            const name = item.querySelector('.menu-name').textContent.toLowerCase();
-            const description = item.querySelector('.menu-description').textContent.toLowerCase();
+        if (featuredCards.length > 0) {
+            console.log('Found featured cards:', featuredCards.length); // Debug log
+            showFeaturedCard(currentFeatured);
             
-            if (name.includes(searchTerm) || description.includes(searchTerm)) {
-                item.style.display = '';
-                hasVisibleItems = true;
-            } else {
-                item.style.display = 'none';
+            // Auto-rotate featured cards
+            setInterval(() => {
+                currentFeatured = (currentFeatured + 1) % featuredCards.length;
+                showFeaturedCard(currentFeatured);
+            }, 5000); // Change slide every 5 seconds
+        } else {
+            console.log('No featured cards found'); // Debug log
+        }
+
+        // Add event listeners for increment and decrement buttons
+    document.querySelectorAll('.increment-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const id = button.getAttribute('data-id');
+            const qtyDisplay = document.getElementById(`qty-${id}`);
+                const currentQty = parseInt(qtyDisplay.textContent);
+                qtyDisplay.textContent = currentQty + 1;
+            updateAddToCartBtn(id);
+        });
+    });
+    
+    document.querySelectorAll('.decrement-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const id = button.getAttribute('data-id');
+            const qtyDisplay = document.getElementById(`qty-${id}`);
+                const currentQty = parseInt(qtyDisplay.textContent);
+                if (currentQty > 0) {
+                    qtyDisplay.textContent = currentQty - 1;
+                updateAddToCartBtn(id);
             }
         });
-
-        // Show/hide no results message
-        noResultsMessage.style.display = hasVisibleItems ? 'none' : 'block';
     });
 
-</script>
+        const style = document.createElement('style');
+        style.textContent = `
+            .cart-button.has-items {
+                background: #1e3c72;
+                color: white;
+                animation: pulse 2s infinite;
+            }
+            
+            @keyframes pulse {
+                0% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.05);
+                }
+                100% {
+                    transform: scale(1);
+                }
+            }
+        `;
+        document.head.appendChild(style);
 
+        // Update the remove button style
+        const removeButtonStyle = document.createElement('style');
+        removeButtonStyle.textContent = `
+            .remove-btn {
+                background: transparent;
+                color:rgb(201, 174, 21);
+                border: none;
+                padding: 8px;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .remove-btn:hover {
+                transform: scale(1.1);
+                color:rgb(218, 204, 81);
+            }
+            
+            .remove-btn i {
+                font-size: 16px;
+            }
+
+            .cart-item {
+                padding: 8px 0;
+                border-bottom: 1px solid #e8f0fe;
+            }
+
+            .cart-item:last-child {
+                border-bottom: none;
+            }
+        `;
+        document.head.appendChild(removeButtonStyle);
+
+        // Close modal when clicking outside
+        document.getElementById('confirmModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeConfirmModal();
+            }
+        });
+</script>
 </body>
 </html>

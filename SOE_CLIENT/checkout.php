@@ -283,13 +283,17 @@ if (empty($cart_items)) {
             <div class="user-details">
                 <h2>Your Details</h2>
                 <form id="checkoutForm" action="process_order.php" method="POST">
-                    <div class="form-group">
-                        <label for="id_number">ID Number</label>
-                        <input type="text" id="id_number" name="id_number" required>
+                <div class="form-group">
+                    <label for="id_number">Student ID Number</label>
+                     <input type="text" id="id_number" name="id_number"
+                        pattern="^(2020|2021|2022|2023|2024|2025)\d{5}$"
+                        title="Enter a 9-digit ID starting with a valid school year (e.g., 202320001)"
+                        placeholder="e.g. 202312345"
+                        maxlength="9" required>
                     </div>
                     <div class="form-group">
                         <label for="name">Enter Name</label>
-                        <input type="text" id="name" name="name" required>
+                        <input type="text" id="name" name="name" placeholder="Enter your full name" required>
                     </div>
                     <div class="form-group">
                         <label for="message">Message for Seller (Optional)</label>

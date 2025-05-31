@@ -183,62 +183,63 @@ while ($row = $result->fetch_assoc()) {
     }
 
     .confirm-modal {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: white;
-        padding: 30px;
-        border-radius: 15px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-        text-align: center;
-        max-width: 400px;
-        width: 90%;
-        z-index: 1001;
-    }
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    z-index: 1003;
+}
 
-    .confirm-modal h3 {
-        color: #1e3c72;
-        font-size: 24px;
-        margin-bottom: 15px;
-    }
+.confirm-modal h3 {
+    color:rgb(69, 74, 83);
+    font-size: 24px;
+    margin-bottom: 15px;
+}
 
-    .confirm-modal p {
-        color: #666;
-        font-size: 16px;
-        margin-bottom: 25px;
-        line-height: 1.5;
-    }
+.confirm-modal p {
+    color: #666;
+    font-size: 16px;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
 
-    .modal-buttons {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-    }
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
 
-    .modal-btn {
-        padding: 12px 25px;
-        border: none;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: transform 0.2s;
-    }
+.modal-btn {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
 
-    .modal-btn:hover {
-        transform: translateY(-2px);
-    }
+.modal-btn:hover {
+    transform: translateY(-2px);
+}
 
-    .cancel-modal-btn {
-        background: #f8f9fa;
-        color: #1e3c72;
-    }
+.cancel-modal-btn {
+    background: #f8f9fa;
+    color:rgb(67, 74, 87);
+}
 
-    .confirm-modal-btn {
-        background: #ff4444;
-        color: white;
-    }
+.confirm-modal-btn {
+    background: #ffd700;
+    color: #333;
+}
+
 
     .sidebar a {
         display: flex;
@@ -261,6 +262,41 @@ while ($row = $result->fetch_assoc()) {
     .sidebar a:hover {
         background: rgba(255, 255, 255, 0.1);
     }
+
+    .quantity-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.quantity-controls button {
+    background-color: #1b4d4d;
+    color: white;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quantity-controls button:hover {
+    background-color: #2c7a7a;
+}
+
+.quantity-input {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    min-width: 30px;
+    text-align: center;
+
     </style>
 
     <!-- Add modal HTML before closing body tag -->

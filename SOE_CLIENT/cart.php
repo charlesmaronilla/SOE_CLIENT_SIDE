@@ -29,13 +29,13 @@
             flex: 1;
             text-align: right;
             font-weight: bold;
-            color:rgb(52, 88, 165);
+            color: #e67e22;
         }
         .remove-btn {
             flex: 0;
             background: none;
             border: none;
-            color:rgb(186, 201, 51);
+            color: #e74c3c;
             font-size: 22px;
             cursor: pointer;
         }
@@ -65,7 +65,7 @@
             margin: 0 10px;
         }
         .btn-clear {
-            background-color: #e74c3c;
+            background-color:rgb(207, 175, 28);
             color: white;
         }
         .btn-back {

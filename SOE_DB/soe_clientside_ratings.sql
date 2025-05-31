@@ -27,8 +27,9 @@ CREATE TABLE `ratings` (
   `stall_id` int NOT NULL,
   `username` varchar(100) DEFAULT 'Anonymous',
   `rating` int NOT NULL,
-  `comment` text,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `menu_item_id` int NOT NULL,
+  `review` varchar(100)
   PRIMARY KEY (`id`),
   CONSTRAINT `ratings_chk_1` CHECK ((`rating` between 1 and 5))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
