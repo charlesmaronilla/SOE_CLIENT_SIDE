@@ -18,14 +18,28 @@ if (!$stall) {
     die("Stall not found");
 }
 
-
-$stmt = $conn->prepare("SELECT * FROM menu_items WHERE is_featured = 1 AND available = 1 AND stall_id = ? ORDER BY category");
+// For featured items
+$stmt = $conn->prepare("
+    SELECT menu_items.*, stalls.name as stall_name 
+    FROM menu_items 
+    JOIN stalls ON menu_items.stall_id = stalls.id 
+    WHERE menu_items.is_featured = 1 
+    AND menu_items.available = 1 
+    AND menu_items.stall_id = ? 
+    ORDER BY menu_items.category
+");
 $stmt->bind_param("i", $stall_id);
 $stmt->execute();
 $featured_result = $stmt->get_result();
 
-
-$stmt = $conn->prepare("SELECT * FROM menu_items WHERE is_featured = 0 AND available = 1 AND stall_id = ? ORDER BY category, name");
+// For regular items
+$stmt = $conn->prepare("
+    SELECT menu_items.*, stalls.name as stall_name 
+    FROM menu_items 
+    JOIN stalls ON menu_items.stall_id = stalls.id 
+    WHERE menu_items.stall_id = ? 
+    ORDER BY menu_items.category, menu_items.name
+");
 $stmt->bind_param("i", $stall_id);
 $stmt->execute();
 $regular_result = $stmt->get_result();
@@ -59,6 +73,7 @@ $regular_result = $stmt->get_result();
     margin-top: -90px;
 }
 
+
 .content {
     flex: 1;
     margin-left: 280px;
@@ -66,209 +81,215 @@ $regular_result = $stmt->get_result();
 }
 
 
+.featured-section {
+    margin-top: -160px;
+    margin-left: -220px;
+    position: relative;
+    width: 100%;
+    max-width: 1500px;
+    padding: 40px 20px;
+    overflow: hidden;
+}
+
 .featured-carousel {
     position: relative;
-    height: 400px;
+    width: 100%;
+    height: 550px;
     margin: 0 auto;
-    z-index: 2;
 }
 
 .featured-card {
     position: absolute;
-    top: -1px;
-    left: 50%;
-    transform: translateX(-50%) scale(0.8);
+    top: -20px;
+    left: 0;
     width: 100%;
-    max-width: 800px;
-    height: 100%;
-    max-height: 480px;
-    border-radius: 20px;
-    padding: 20px;
+    height: 590px;
     opacity: 0;
+    visibility: hidden;
+    transform: translateX(-100%);
     transition: all 0.5s ease;
-    pointer-events: none;
-    background: linear-gradient(135deg, rgb(133, 114, 113) 0%, rgb(78, 105, 151) 100%);
-
+    border-radius: 20px;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
 }
 
 .featured-card.active {
     opacity: 1;
-    transform: translateX(-50%) scale(1);
-    pointer-events: all;
+    visibility: visible;
+    transform: translateX(0);
     z-index: 2;
-}
-
-.featured-card.prev,
-.featured-card.next {
-    opacity: 0.5;
-    z-index: 1;
 }
 
 .featured-card.prev {
-    transform: translateX(-150%) scale(0.8);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-100%);
+    z-index: 1;
 }
 
 .featured-card.next {
-    transform: translateX(50%) scale(0.8);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(100%);
+    z-index: 1;
 }
 
-.featured-section {
-    margin-top: 20px;
-    position: relative;
-    background: transparent;
-    padding: 30px;
-    margin-bottom: 50px;
-    overflow: hidden;
-    min-height: 500px;
-    display: flex;
-    align-items: stretch;
-}
-
-.featured-carousel {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    width: 100%;
-}
-
-.featured-card {
-    flex: 1 1 calc(33.333% - 20px); /* Three cards per row */
-    display: flex;
-    flex-direction: column;
-    border-radius: 10px;
-    overflow: hidden;
-    width: 100%;
-    max-width: 1400px;
-    height: 500px;
-    margin-top: -20px;
-    
-}
-
-.featured-card img {
+/* Dark gradient overlay */
+.featured-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    flex-grow: 1;
+    background: linear-gradient(to right, rgba(0,0,0,0.7), rgba(0,0,0,0.2));
+    z-index: 1;
 }
 
+/* Content styling */
 .featured-content {
-    padding: 15px;
-    background: transparent;
-    position: relative;
+    position: absolute;
+    left: 0;
+    bottom: 0;
     z-index: 2;
+    width: 45%;
+    padding: 3rem;
+    background: linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 80%, transparent 100%);
+    color: #fff;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
 }
 
 .featured-content h3 {
-    margin-left: -10px;
-    font-size: 30px;
-    color:rgb(43, 46, 53);
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+    color: #4b5563;
+    transform: translateY(20px);
+    opacity: 0;
+    animation: slideUp 0.8s forwards;
 }
 
 .featured-content p {
-    margin-left: 5px;
-    font-size: 16px;
-    color:rgb(59, 67, 82);
-    margin-bottom: 4px;
-    line-height: 1.5;
-}
-.category {
-    display: inline-block;
-    padding: 4px 12px;
-    background:rgba(238, 255, 84, 0.99);
-    color: #1e3c72;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
-    margin-top: 5px;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    color: rgb(207, 207, 207);
+    transform: translateY(20px);
+    opacity: 0;
+    animation: slideUp 0.8s 0.2s forwards;
 }
 
 .featured-content strong {
-    margin-left: 7px;
-    font-size: 28px;
-    color:rgb(51, 83, 141);
+    font-size: 2.2rem;
+    font-weight: 700;
+    color:rgb(42, 92, 209);
+    margin-bottom: 1.5rem;
+    display: block;
+    transform: translateY(20px);
+    opacity: 0;
+    animation: slideUp 0.8s 0.4s forwards;
 }
 
-.quantity-contr {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 12px;
-}
-
-.quantity-contr button {
-    margin-left: -420px;
-    margin-right: 420px;
-    width: 35px;
-    height: 35px;
-    background-color:rgb(9, 64, 100);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 20px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.quantity-contr button:hover {
-    background-color: #2980b9;
-}
-
-.quantity-display {
-    margin-left: -420px;
-    margin-right: 420px;
-    width: 40px;
-    height: 35px;
-    background-color: #f2f2f2;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+.featured-content .category {
+    margin-bottom: -20px;
+    display: inline-block;
+    width: 120px;
     text-align: center;
-    line-height: 35px;
-    font-size: 16px;
-    font-weight: 600;
-    user-select: none;
+    padding: 6px 10px;
+    background-color: rgba(211, 248, 1, 0.8);
+    backdrop-filter: blur(5px);
+    color:rgb(41, 49, 63);
+    font-size: 0.9rem;
+    border-radius: 20px;
+    font-weight: 500;
+    transform: translateY(20px);
+    opacity: 0;
+    animation: slideUp 0.8s 0.6s forwards;
 }
 
-.featured-btn button {
-    width: 18%;
-    margin-top: 12px;
-    padding: 10px 15px;
-    background-color:rgb(34, 64, 121);
+
+.featured-content .featured-btn {
+    transform: translateY(20px);
+    opacity: 0;
+    animation: slideUp 0.8s 0.8s forwards;
+}
+
+.featured-content .add-to-cart-btn {
+    background:rgb(233, 255, 33);
     color: white;
     border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    font-weight: bold;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
+    gap: 10px;
+    width: auto;
 }
 
-.featured-btn button :hover {
-    background-color:rgb(45, 104, 158);
+.featured-content .add-to-cart-btn:hover {
+    background:rgb(231, 228, 41);
+    transform: translateY(-2px);
 }
 
-.featured-btn button i {
-    font-size: 18px;
+.featured-content .add-to-cart-btn i {
+    font-size: 1.2rem;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .featured-content {
+        width: 55%;
+    }
+    
+    .featured-content h3 {
+        font-size: 2.4rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .featured-content {
+        width: 100%;
+        background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 80%, transparent 100%);
+    }
+    
+    .featured-content h3 {
+        font-size: 2rem;
+    }
+    
+    .featured-content p {
+        font-size: 1rem;
+    }
+    
+    .featured-content strong {
+        font-size: 1.8rem;
+    }
 }
 
 
-.carousel-nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 100%;
-    z-index: 3;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 20px;
-}
 .menu-section {
     margin-top: 60px;
+    margin-left: -290px;
 }
 .menu-header {
     display: flex;
@@ -310,19 +331,18 @@ $regular_result = $stmt->get_result();
     color: #1e3c72;
 }
 .menu-grid {
-    position: relative;
-    min-height: 200px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 30px;
     margin-top: 20px;
 }
 
+
 .card {
     background: white;
     border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 15px rgba(233, 214, 42, 0.05);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     transform-origin: center bottom;
     padding: 15px;
@@ -338,11 +358,10 @@ $regular_result = $stmt->get_result();
 
 .card img {
     width: 100%;
-    height: 180px;
+    height: 220px;
     object-fit: cover;
     border-radius: 10px;
-}
-
+} 
 
 .card-content {
     padding: 20px;
@@ -361,12 +380,6 @@ $regular_result = $stmt->get_result();
     line-height: 1.4;
 }
 
-.card strong {
-    color:rgb(83, 109, 153);
-    font-size: 20px;
-    display: block;
-    margin-bottom: 15px;
-}
 .category-tag {
     display: inline-block;
     padding: 4px 12px;
@@ -378,7 +391,15 @@ $regular_result = $stmt->get_result();
     margin-top: 5px;
 }
 
-.quantity-controls {
+
+.card strong {
+    color:rgb(83, 109, 153);
+    font-size: 20px;
+    display: block;
+    margin-bottom: 15px;
+}
+
+.quantity-control {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -386,28 +407,26 @@ $regular_result = $stmt->get_result();
     margin: 20px 0;
 }
 
-.quantity-contr button {
-    margin-left: -505px;
-    margin-right: 505px;
-    width: 35px;
-    height: 35px;
-    background-color:rgb(9, 64, 100);
+.quantity-control button {
+    background-color:rgb(34, 64, 121);
     color: white;
     border: none;
-    border-radius: 6px;
-    font-size: 20px;
-    font-weight: bold;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    font-size: 18px;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.quantity-contr button:hover {
-    background-color: #2980b9;
+.quantity-control button:hover {
+    background-color:rgb(45, 104, 158);
 }
 
-.quantity-display {
-    margin-left: -505px;
-    margin-right: 505px;
+.qty-display {
     width: 40px;
     height: 35px;
     background-color: #f2f2f2;
@@ -442,69 +461,47 @@ $regular_result = $stmt->get_result();
     transform: none;
 }
 
-.menu-info {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.menu-name {
-    color: #333;
-    font-size: 18px;
-    font-weight: 600;
-    margin: 0;
-}
-
-.menu-description {
-    color: #666;
-    font-size: 14px;
-    margin: 0;
-    line-height: 1.4;
-}
-
-.menu-price {
+.cart-button {
+    position: fixed;
+    top: 10px;
+    right: 30px;
+    padding: 12px 25px;
+    background: white;
     color: #1e3c72;
-    font-size: 20px;
-    font-weight: 600;
-    margin: 5px 0;
-}
-
-.quantity-controls {
-    margin-top: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 10px;
-}
-
-.quantity-controls button {
-    background-color: #1b4d4d;
-    color: white;
     border: none;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    font-size: 18px;
+    border-radius: 8px;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s;
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    z-index: 1001;
 }
 
-.quantity-controls button:hover {
-    background-color: #2c7a7a;
+.cart-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
 }
 
-.quantity-display {
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-    min-width: 30px;
-    text-align: center;
+.cart-button.bounce {
+    animation: cartBounce 0.5s ease;
 }
 
+.cart-button.shake {
+    animation: cartShake 0.5s ease;
+}
+
+/* Cart icon styles */
+.cart-icon {
+    font-size: 1.2em;
+    transition: transform 0.3s ease;
+}
+
+.cart-button:hover .cart-icon {
+    transform: scale(1.1);
+}
 
 .cart-button {
     position: fixed;
@@ -523,10 +520,6 @@ $regular_result = $stmt->get_result();
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     transition: transform 0.2s ease;
     z-index: 1001;
-}
-
-.cart-button:hover {
-    transform: translateY(-2px);
 }
 
 #cartBtn {
@@ -1151,6 +1144,176 @@ $regular_result = $stmt->get_result();
     background: rgba(255, 255, 255, 0.1);
 }
 
+.card-content strong {
+    display: block;
+    font-size: 1.4rem;
+    color: #1e3c72;
+    margin: 10px 0;
+}
+
+.card-content .stall {
+    display: flex;
+    align-items: center;
+    color: #666;
+    font-size: 0.9rem;
+    margin: 8px 0;
+}
+
+.card-content .category-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(238, 255, 84, 0.99);
+    color: #1e3c72;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.quantity-control button {
+    width: 35px;
+    height: 35px;
+    background-color: #1e3c72;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.quantity-control button:hover {
+    background-color: #2a5298;
+}
+
+.qty-display {
+    width: 40px;
+    height: 35px;
+    background-color: #f2f2f2;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+.add-to-cart-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #1e3c72;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.add-to-cart-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.add-to-cart-btn:not(:disabled):hover {
+    background-color: #2a5298;
+}
+
+.item-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.category-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(238, 255, 84, 0.99);
+    color: #1e3c72;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.featured-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    background: #ffd700;
+    color: #1e3c72;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.unavailable-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    background: #ff4444;
+    color: white;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.price {
+    display: block;
+    font-size: 1.4rem;
+    color: #1e3c72;
+    margin: 10px 0;
+}
+
+.out-of-stock-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: not-allowed;
+    opacity: 0.8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.no-items-message {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.no-items-message i {
+    font-size: 3rem;
+    color: #1e3c72;
+    margin-bottom: 15px;
+}
+
+.no-items-message p {
+    color: #666;
+    font-size: 1.1rem;
+}
+
     </style>
 </head>
 <body>
@@ -1197,59 +1360,45 @@ $regular_result = $stmt->get_result();
     <a href="ratings.php?stall_id=<?= $stall_id ?>" class="review-btn">Review & Ratings</a>
 </div>
 
-          <!-- Featured Section -->
+             <!-- Main Content -->
+<div class="content">
+        <!-- Featured Section -->
         <div class="featured-section">
     <div class="featured-carousel">
-                <?php 
-                $featured_count = 0;
-                while($item = $featured_result->fetch_assoc()): 
-                    $featured_count++;
-                ?>
-                    <div class="featured-card" data-category="<?= htmlspecialchars($item['category']) ?>" data-id="<?= $item['id'] ?>">
-                <img src="assets/images/<?= htmlspecialchars($item['image']) ?>" alt="<?= htmlspecialchars($item['name']) ?>">
-                        <div class="featured-content">
-                <h3><?= htmlspecialchars($item['name']) ?></h3>
-                <p data-id="<?= htmlspecialchars($item['id']) ?>">
-                    <?= htmlspecialchars($item['description']) ?> - <span class="category"><?= htmlspecialchars($item['category']) ?></span></p>
-                <strong>₱<?= number_format($item['price'], 2) ?></strong>
-                
-                 <div class="featured-qty-btn">
-                <div class="quantity-contr ">
-                    <button class="decrement-btn" data-id="<?= $item['id'] ?>">−</button>
-                    <div class="quantity-display" id="qty-<?= $item['id'] ?>">0</div>
-                    <button class="increment-btn" data-id="<?= $item['id'] ?>">+</button>
+        <?php 
+        $featured_count = 0;
+        while($item = $featured_result->fetch_assoc()): 
+            $featured_count++;
+        ?>
+            <div class="featured-card" style="background-image: url('assets/images/<?= htmlspecialchars($item['image']) ?>')" data-index="<?= $featured_count - 1 ?>">
+                <div class="featured-content">
+                    <h3><?= htmlspecialchars($item['name']) ?></h3>
+                    <p><?= htmlspecialchars($item['description']) ?> - <span class="category"><?= htmlspecialchars($item['category']) ?></span></p>
+                    <span class="stall"><i class="fas fa-location-dot" style="color:rgb(216, 198, 39); margin-right: 5px; margin-top: -10px;"></i><?= htmlspecialchars($item['stall_name']) ?></span>
+                    <strong>₱<?= number_format($item['price'], 2) ?></strong>
+                    <div class="featured-btn">
+                    <button class="add-to-cart-btn" data-id="<?= $item['id'] ?>">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+                    </div>
                 </div>
-               </div>
-
-                <div class="featured-btn">
-                    <div class="add-btn ">
-                        <button class="add-to-cart-btn" data-id="<?= $item['id'] ?>">
-                         <i class="fas fa-shopping-cart"></i> Add to Cart
-                        </button></div>
-                  </div>          
-                 </div>
             </div>
         <?php endwhile; ?>
-                <?php if ($featured_count === 0): ?>
-                    <div class="no-featured-items">
-                        <i class="fas fa-info-circle"></i>
-                        <p>No featured items available at the moment.</p>
-                    </div>
-                <?php endif; ?>
-            </div>
-            </div>
+    </div>
+</div>
 
+        <!-- Menu Section -->
         <div class="menu-section">
             <div class="menu-header">
-                <h2 class="menu-title"><i class="fas fa-utensils"></i> Menu</h2>
+                <h2 class="menu-title"><i class="fas fa-utensils"></i> All Menu Items</h2>
                 <div class="search-container">
                     <div class="category-filter">
                         <button class="category-btn active" data-category="all">All</button>
-                        <button class="category-btn" data-category="Meal">Meals</button>
+                        <button class="category-btn" data-category="Meals">Meals</button>
                         <button class="category-btn" data-category="Beverage">Beverages</button>
-                        <button class="category-btn" data-category="Dessert">Desserts</button>
+                        <button class="category-btn" data-category="Desserts">Desserts</button>
                     </div>
-                 
+
                 <div class="search-box">
                     <label for="searchInput" class="visually-hidden">Search Menu Items</label>
                     <i class="fas fa-search"></i>
@@ -1260,39 +1409,63 @@ $regular_result = $stmt->get_result();
                         aria-label="Search menu items"
                     >
                 </div>
-
+                
                 </div>
             </div>
 
-            <div class="menu-grid">
-                <?php while($item = $regular_result->fetch_assoc()): ?>
-                    <div class="card" data-id="<?= $item['id'] ?>" data-category="<?= htmlspecialchars($item['category']) ?>">
+    <div class="menu-grid">
+        <?php 
+        $hasItems = false;
+        while($item = $regular_result->fetch_assoc()): 
+            $hasItems = true;
+        ?>
+            <div class="card" data-id="<?= $item['id'] ?>" data-category="<?= htmlspecialchars($item['category']) ?>">
                 <img src="assets/images/<?= htmlspecialchars($item['image']) ?>" alt="<?= htmlspecialchars($item['name']) ?>">
-                        <div class="card-content">
-                            <h3><?= htmlspecialchars($item['name']) ?></h3>
-                            <p><?= htmlspecialchars($item['description']) ?></p>
-                            <strong>₱<?= number_format($item['price'], 2) ?></strong>
-                            <div class="category-tag"><?= htmlspecialchars($item['category']) ?></div>
+                <div class="card-content">
+                    <h3><?= htmlspecialchars($item['name']) ?></h3>
+                    <p><?= isset($item['description']) ? htmlspecialchars($item['description']) : 'No description' ?></p>
+                    <div class="item-meta">
+                        <span class="category-tag"><?= htmlspecialchars($item['category']) ?></span>
+                        <?php if ($item['is_featured']): ?>
+                            <span class="featured-tag"><i class="fas fa-star"></i> Featured</span>
+                        <?php endif; ?>
+                        <?php if (!$item['available']): ?>
+                            <span class="unavailable-tag">Not Available</span>
+                        <?php endif; ?>
+                    </div>
+                    <strong class="price">₱<?= number_format($item['price'], 2) ?></strong>
 
-                <div class="quantity-controls">
-                    <button class="decrement-btn" data-id="<?= $item['id'] ?>">−</button>
-                    <div class="qty-display" id="qty-<?= $item['id'] ?>">0</div>
-                    <button class="increment-btn" data-id="<?= $item['id'] ?>">+</button>
-                </div>
+                    <?php if ($item['available']): ?>
+                        <div class="quantity-control">
+                            <button class="decrement-btn" data-id="<?= $item['id'] ?>">−</button>
+                            <div class="qty-display" id="qty-<?= $item['id'] ?>">0</div>
+                            <button class="increment-btn" data-id="<?= $item['id'] ?>">+</button>
+                        </div>
 
                         <button class="add-to-cart-btn" data-id="<?= $item['id'] ?>" disabled>
-                                <i class="fas fa-shopping-cart"></i> Add to Cart
-                            </button>
-                    </div>
-                    </div>
-                <?php endwhile; ?>
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+                    <?php else: ?>
+                        <button class="out-of-stock-btn" disabled>
+                            <i class="fas fa-ban"></i> Out of Stock
+                        </button>
+                    <?php endif; ?>
+                </div>
             </div>
+        <?php endwhile; ?>
 
-            <div id="no-results-message">
-                <i class="fas fa-search"></i>
-                No menu items found matching your search.
+        <?php if (!$hasItems): ?>
+            <div class="no-items-message">
+                <i class="fas fa-utensils"></i>
+                <p>No menu items available for this stall.</p>
             </div>
-        </div>
+        <?php endif; ?>
+    </div>
+
+    <div id="no-results-message" style="display: none;">
+        <i class="fas fa-search"></i>
+        No menu items found matching your search.
+    </div>
 </div>
 
 <!-- Cart Implementation -->
